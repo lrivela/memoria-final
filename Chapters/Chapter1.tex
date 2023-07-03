@@ -107,9 +107,11 @@ De todo esto se deduce que resulta muy importante que los procesos del área se 
 
 \section{Estado del arte}
 
-El PNL (Procesamiento del lenguaje natural) es un subcampo de la inteligencia artificial que busca enseñar a un programa informático a comprender, interpretar y generar texto en lenguaje humano. A principios del siglo XXI, el PNL experimentó un crecimiento significativo gracias a la aplicación de algoritmos de aprendizaje profundo y la disponibilidad de grandes corpus de texto \citep{WEBSITE:14}. 
+El PNL (Procesamiento del lenguaje natural) es un subcampo de la inteligencia artificial que busca enseñar a un programa informático a comprender, interpretar y generar texto en lenguaje humano. A principios del siglo XXI, el PNL experimentó un crecimiento significativo gracias a la aplicación de algoritmos de aprendizaje profundo y la disponibilidad de grandes corpus de texto \citep{WEBSITE:14}.
 
-En 2003, Yoshua Bengio et al. entrenan la primer red neuronal orientada al lenguaje, utilizando vectores para representar palabras. Llamarían a este proceso "aprender una representación distribuida para cada palabra" \citep{ARTICLE:1}.
+\subsection{Word Embeddings}
+
+En 2003, Yoshua Bengio et al. entrenan la primer red neuronal orientada al lenguaje, utilizando vectores para representar palabras. Llamarían a este proceso ``aprender una representación distribuida para cada palabra'' \citep{ARTICLE:1}.
 
 En 2008 Ronan Collobert y Jason Weston introducen el concepto de \textit{Word Embeddings} como una herramienta potente para tareas de PNL. Se distinguirían de sus antecesores mencionando que su objetivo era predecir la relevancia de una palabra dada la parte previa y posterior de la oración, a diferencia de el trabajo previo que buscaba predecir la probabilidad de una palabra dada la parte previa de una oración.
 
@@ -119,14 +121,26 @@ Posteriormente, en 2014, Pennington et al. publicarían \textit{GloVe} como otro
 
 Los \textit{Word Embeddings} se convirtieron en la herramienta principal dentro del PNL. Capturan el significado de una palabra y la traducen a una representación numérica que puede ser usada como entrada para las redes neuronales.
 
+\subsection{Transformers}
+
 El avance del aprendizaje profundo, permitió a los investigadores desarrollar arquitecturas de redes neuronales más avanzadas y eficientes. 
 
-Sin embargo, no fue hasta 2017, cuando Vaswani et. al publican la utilización de un mecanismo de atención para desarrollar una nueva arquitectura que ellos llamarían \textit{Transformers} que se marca un verdadero hito \citep{ARTICLE:5}. Las redes más usadas hoy en día como \textit{BERT} o \textit{ChatGPT} están basados en esta mejora.
+Sin embargo, no fue hasta 2017, cuando Vaswani et. al publican la utilización de un mecanismo de atención para desarrollar una nueva arquitectura que ellos llamarían \textit{Transformers} que se marca un verdadero hito \citep{ARTICLE:5}. Las redes más usadas hoy en día están basadas en esta mejora.
 
-El mecanismo de atención le sirve a la red para saber a que parte de la oración de entrada le tiene que prestar más atención para cada elemento de la salida. Este enfoque tiene la limitante de que cada secuencia debe ser procesada de a una a la vez.
+Básicamente, en los \textit{Transformers} se reemplazan las capas recurrentes que se venían utilizando hasta ese momento por ``capas de atención'' que codifican cada palabra en función del resto de la frase, permitiendo de esta forma, introducir el contexto en la representación matemática del texto. Por este motivo, sus \textit{Embeddings} generados son denominados \textit{Embeddings} contextuales.
 
-Los \textit{Transformers} vienen a solucionar este problema con un mecanismo de "atención propia" que permite una mayor paralelización.
+Otra de las innovaciones introducidas es el uso de \textit{Embeddings} posicionales. Con ellos se logra una mayor paralelización, ya que no es más necesario pasar una palabra a la vez. Agregando un valor secuencial con cada palabra, hacen posible pasarle a la red todas las palabras en simultáneo.
 
+En la figura \ref{fig:transformers} se puede ver la evolución de la cantidad de parámetros de estas redes.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/transformers.png}
+	\caption{Evolución de las redes en cantidad de parámetros.\protect\footnotemark.}
+	\label{fig:transformers}
+\end{figure}
+
+\footnotetext{Imagen tomada de \url{https://developer.nvidia.com/blog/using-deepspeed-and-megatron-to-train-megatron-turing-nlg-530b-the-worlds-largest-and-most-powerful-generative-language-model/}}
 
 %----------------------------------------------------------------------------------------
 
