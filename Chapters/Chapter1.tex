@@ -131,7 +131,7 @@ Básicamente, en los \textit{Transformers} se reemplazan las capas recurrentes q
 
 Otra de las innovaciones introducidas es el uso de \textit{Embeddings} posicionales. Con ellos se logra una mayor paralelización, ya que no es más necesario pasar una palabra a la vez. Agregando un valor secuencial con cada palabra, hacen posible pasarle a la red todas las palabras en simultáneo.
 
-En la figura \ref{fig:transformers} se puede ver la evolución de la cantidad de parámetros de estas redes.
+Estas redes fueron evolucionando en tamaño y complejidad conforme transcurría el tiempo. En la figura \ref{fig:transformers} se puede ver la evolución de la cantidad de parámetros de estas redes a lo largo de los años.
 
 \begin{figure}[htbp]
 	\centering
@@ -142,8 +142,33 @@ En la figura \ref{fig:transformers} se puede ver la evolución de la cantidad de
 
 \footnotetext{Imagen tomada de \url{https://developer.nvidia.com/blog/using-deepspeed-and-megatron-to-train-megatron-turing-nlg-530b-the-worlds-largest-and-most-powerful-generative-language-model/}}
 
+Los modelos basados en \textit{Transformers} se convirtieron en el modelo por defecto para tareas como traducción, clasificación de texto y resumen de textos por citar algunos ejemplos.
+
+En el área de atención al cliente, los principales usos de estas redes son \citep{WEBSITE:14}:
+\begin{itemize}
+\item \textit{Chatbots}: ayudan a responder consultas de forma inmediata evitando filas de espera.
+\item Análisis de sentimiento: para realizar análisis sobre comentarios y quejas de los clientes.
+\item Redireccionamiento de tickets: eliminan cuellos de botella en la parte de clasificación al redirigir el ticket directamente al área correspondiente.
+\end{itemize}
+
 %----------------------------------------------------------------------------------------
 
 \section{Objetivos y alcance}
 
+\subsection{Objetivos}
+
+El propósito de este trabajo fue el desarrollo de modelos de inteligencia artificial (IA) para mejorar y agilizar la atención al cliente. Para lograr este objetivo es necesario realizar la clasificación automática de los reclamos de usuario en categorías de primer y segundo nivel.
+
+En la figura \ref{fig:diag1} se presenta un diagrama de alto nivel de la solución. Se observa que en primera instancia, los reclamos se reciben por correo y chat, y luego son registrados en Salesforce, el sistema de \textit{CRM} que utiliza el área de atención al cliente. Estos datos se replican en BigQuery a través de un proceso orquestado por Apache Airflow.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{./Figures/solucion1.png}
+	\caption{Diagrama general de la solución.}
+	\label{fig:diag1}
+\end{figure}
+
+Los modelos de IA clasifican los casos que están en BigQuery y guardan la categoría de primer y segundo nivel en una tabla que luego el usuario podrá utilizar.
+
+\subsection{Alcance}
 
