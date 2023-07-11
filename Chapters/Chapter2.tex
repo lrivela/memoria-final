@@ -156,11 +156,19 @@ donde las sumatorias son sobre todos los documentos $j$ que no sean de la clase 
 
 BERT \textit{(Bidirectional Encoder Representations from Transformers)} es un modelo \textit{open source} de PNL desarrollado por Google en el año 2018. El modelo original fue entrenado con texto de Wikipedia y el \textit{dataset} BookCorpus de Google.
 
+Inicialmente, dos modelos de BERT fueron presentados:
+\begin{itemize}
+	\item \textit{base}: con 12 capas, 12 cabezas de atención y 110 millones de parámetros.
+	\item \textit{large}: con 24 capas, 16 cabezas de atención y 340 millones de parámetros.
+\end{itemize}
+
+Cada capa de BERT es un \textit{Transformer Encoder}. Cuando se habla de, por ejemplo, 12 capas, son 12 de esos codificadores apilados uno encima de otro. Los datos de entrada son consumidos por la primer capa, y van pasando por cada una hasta llegar a la última. Como salida, habrá un \textit{embedding} donde cada posición del \textit{token} tendrá un vector de 768 posiciones para BERT \textit{base} y 1024 para BERT \textit{large} \citep{WEBSITE:20}.
+
 La innovación introducida por BERT es aplicar dos técnicas en la etapa de entrenamiento: MLM \textit{(Masked Language Model)} y NSP \textit{(Next Sentence Prediction)}. 
 
 MLM consiste en dar a BERT una secuencia para que optimice sus pesos internos y produzca la misma secuencia. Sin embargo, previamente a dar a BERT la secuencia, se enmascaran ciertos \textit{tokens} para que BERT los tenga que ``adivinar''. La implicancia de esta técnica es que BERT termina aprendiendo del contexto de la oración para predecirlos.
 
-Para lograr esto, BERT se apoya en un mecanismo de atención propia o \textit{self-attention} posibilitado por los \textit{Transformers} bidireccionales en el núcleo del diseño de BERT. Esto es importante ya que el significado de una palabra puede cambiar su significado a medida que se desarrolla una oración. Cuantas más palabras haya en cada oración o frase, mas ambigua se  vuelve la palabra en cuestión. BERT se encarga de esta ambigüedad leyendo una oración bidireccionalmente, teniendo en cuenta el efecto de todas las palabras en la oración y no sólo las que la preceden \citep{WEBSITE:20}.
+Para lograr esto, BERT se apoya en un mecanismo de atención propia o \textit{self-attention} posibilitado por los \textit{Transformers} bidireccionales en el núcleo del diseño de BERT. Esto es importante ya que el significado de una palabra puede cambiar su significado a medida que se desarrolla una oración. Cuantas más palabras haya en cada oración o frase, mas ambigua se  vuelve la palabra en cuestión. BERT se encarga de esta ambigüedad leyendo una oración bidireccionalmente, teniendo en cuenta el efecto de todas las palabras en la oración y no sólo las que la preceden \citep{WEBSITE:21}.
 
 En la figura \ref{fig:selfattention} se puede ver como para una palabra, el modelo de IA se hace una ponderación de la importancia del resto de las palabras en esa oración.
 
@@ -179,11 +187,37 @@ Para saber distinguir cuándo comienza la primer oración y cuándo la segunda, 
 
 \begin{enumerate}
 	\item Un \textit{token} ``[CLS]'' se inserta al comienzo de la primer oración y un \textit{token} ``[SEP]'' es insertado al final de las dos oraciones.
-	\item 
+	\item Se agrega un \textit{embedding} indicando para cada \textit{token} si corresponde con la oración A o B.
+	\item Se agrega un \textit{embedding} posicional indicando para cada \textit{token} su posición en la secuencia.
 \end{enumerate}
 
+En la figura \ref{fig:bertinput} se puede ver cómo se combinan estas dos técnicas cuando se entrena BERT.
 
-https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{./Figures/bertinput.png}
+	\caption{Ejemplo de entrada de datos a BERT con MLM y NSP combinados\protect\footnotemark.}
+	\label{fig:bertinput}
+\end{figure}
 
+\footnotetext{Imagen tomada de \url{https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270}}
+
+En la primera fila se observa como fueron separadas las dos oraciones. Luego en el \textit{embedding} amarillo, se observa como algunos \textit{tokens} son enmascarados para que luego la red los tenga que predecir. En el tercera, en verde, se observa la asignación de cada \textit{token} a la oración A o B y por último, se observa un \textit{embedding} con el orden de cada \textit{token}.
 
 \section{Herramientas de software utilizadas}
+
+En esta sección se presentan las herramientas que se utilizaron tanto para la fase de entrenamiento como para el despliegue de los modelos.
+
+\subsection{Python}
+
+\subsection{GitHub}
+
+\subsection{BigQuery}
+
+BigQuery es un servicio \textit{serverless} de \textit{Data Warehouse} de GCP (Google Cloud Platform). Los datos se guardan en colecciones de tablas, que a su vez, se agrupan en \textit{datasets}. El acceso a los datosse hace a través del lenguaje SQL. Los recursos que se necesiten para ejecutar una consulta se calcula dinámicamente en base a las características de la misma y también en cómo esté configurada la tabla.
+
+\subsection{Vertex AI Workbench}
+
+\subsection{Docker y Google Artifact Registry}
+
+\subsection{Apache Airflow}
