@@ -48,7 +48,7 @@ En esta sección se detallan los requerimientos funcionales y las restricciones 
 
 En esta sección se introducen las herramientas utilizadas para realizar la limpieza y preparación del texto que sirvió tanto para la parte de entrenamiento como para la parte de predicción en el despliegue.
 
-\subsection{NLTK}
+\subsection{Natural Language Toolkit}
 
 NLTK \textit{(Natural Language Toolkit)} es una librería de Python para preprocesar texto. Es una de las herramientas principales del mercado y entre otras cosas nos permite:
 \begin{itemize}
@@ -102,7 +102,7 @@ En la figura \ref{fig:labelencoding} podemos ver un ejemplo de la transformació
 
 \footnotetext{Imagen tomada de \url{https://www.mygreatlearning.com/blog/label-encoding-in-python/}}
 
-\subsubsection{Vectorizador TF-IDF}
+\subsubsection{Vectorizador Term Frequency - Inverse Document Frequency}
 
 La vectorización es una técnica de PNL que convierte una secuencia de \textit{tokens} (obtenidos previamente en la etapa de segmentación) a un vector numérico.
 
@@ -217,6 +217,7 @@ Python es un lenguaje de programación utilizado principalmente para desarrollo 
 GitHub es un servicio web donde los usuarios pueden alojar repositorios con Git como sistema de control de versiones. Este sistema permite gestionar y rastrear cambios en el código a través del tiempo, ayudando a los equipos de desarrolladores a trabajar en proyectos de manera colaborativa.
 
 \subsection{BigQuery}
+\label{cap2-bq}
 
 BigQuery es un servicio \textit{serverless} de \textit{Data Warehouse} de GCP (Google Cloud Platform). Los datos se guardan en colecciones de tablas, que a su vez, se agrupan en \textit{datasets}. Cada columna de las tablas se almacena por separado, por eso se dice que BigQuery es una base de datos columnar.
 

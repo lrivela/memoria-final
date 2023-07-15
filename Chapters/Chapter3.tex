@@ -39,7 +39,7 @@
 }
 
 
-En este capítulo se describe cómo se han utilizado las herramientas mencionadas en el capítulo \ref{Chapter2} y sus integraciones. Se presenta la arquitectura de alto nivel completa y luego se describe parte por parte desde el consumo de datos hasta la salida del proceso y su almacenamiento.
+En este capítulo se describe cómo se han utilizado las herramientas mencionadas en el capítulo \ref{Chapter2} y sus integraciones. Se presenta la arquitectura de alto nivel completa y luego se describe detalladamente desde el consumo de datos hasta la salida del proceso y su almacenamiento.
 
 
 \section{Arquitectura del sistema}
@@ -59,7 +59,7 @@ Los datos para realizar el entrenamiento de los modelos de IA fueron tomados del
 
 Estos datos son llevados a BigQuery por un proceso ajeno a este desarrollo, que se encarga de sincronizar la base de Salesforce hacia el \textit{data warehouse} diariamente. Particularmente, hay una tabla que contiene los reclamos y consultas de los usuarios, con su identificador de caso, fecha de creación y estado.
 
-En las ocasiones que las que fue necesario un mayor poder de cómputo a través del uso de una placa de vídeo dedicada, se utilizó una instancia de Vertex AI Workbench en la nube de Google. Por lo general, estas situaciones se dieron al momento de realizar distintas pruebas con las redes neuronales BERT. Los modelos eran luego exportados al almacenamiento de la nube llamado Cloud Storage en formato ``Pickle'' o ``HDF5'' \textit{(Hierarchical Data Format 5)}.
+En las ocasiones en las que fue necesario un mayor poder de cómputo a través del uso de una placa de vídeo dedicada, se utilizó una instancia de Vertex AI Workbench en la nube de Google. Por lo general, estas situaciones se dieron al momento de realizar distintas pruebas con las redes neuronales BERT. Los modelos eran luego exportados al almacenamiento de la nube llamado Cloud Storage en formato ``Pickle'' o ``HDF5'' \textit{(Hierarchical Data Format 5)}.
 
 El repositorio del proyecto cuenta con un Workflow de GitHub Action que se corre manualmente y genera una imagen de Docker, incluyendo bibliotecas y librerías necesarias, archivos de código y de configuración. Esta imagen de Docker es enviada al Artifact Registry de la nube de Google y almacenada allí.
 
@@ -69,9 +69,104 @@ El repositorio de Airflow cuenta con un Workflow de GitHub Action que sincroniza
 
 Al momento de ejecutar el proceso, Airflow utiliza un operador dentro del DAG para conectarse con la plataforma de Kubernetes en instancia un Pod. Este Pod ejecuta los archivos de código del contenedor que se empaquetaron en la imagen de Docker cargada previamente en el Artifact Registry.
 
-Al finalizar, se guardan los resultados de las predicciones en una tabla en BigQuery y el Pod es eliminado de Kubernetes. Los datos quedan disponibilizados en la base para que cualquier usuario con los suficientes permisos pueda consumirlos ejecutando una consulta a la base.
+Al finalizar, se guardan los resultados de las predicciones en una tabla en BigQuery y el Pod es eliminado de Kubernetes. Los datos quedan disponibles en la base para que cualquier usuario con los suficientes permisos pueda consumirlos ejecutando una consulta a la base.
 
 \section{Extracción y preprocesamiento del texto}
+
+En esta sección se describen en detalle los pasos realizados para obtener los datos crudos y aplicarles un preprocesamiento para poder usarlos de entrada en el posterior entrenamiento de los modelos de IA.
+
+\subsection{Extracción de datos de BigQuery}
+
+Inicialmente se realizó un relevamiento de las tablas existentes, y en particular se encontró una tabla que contenía información de los reclamos y consultas. 
+
+Las columnas de interés de esa tabla fueron:
+\begin{itemize}
+	\item El identificador del caso.
+	\item El número del caso.
+	\item La categoría L2 (de segundo nivel).
+	\item La categoría L3 (de tercer nivel).
+	\item El estado del caso.
+	\item La descripción: el contenido del mensaje que escribió el usuario.
+	\item La fecha de creación.
+	\item La fecha de cierre.
+\end{itemize}
+
+Para la fase de entrenamiento, se limitó la extracción de casos a los que tenían fecha de creación entre enero de 2021 y diciembre de 2022. Además, su estado debía ser ``Resuelto'' o ``Cerrado''. Sin embargo, por la poca cantidad de datos que había para algunos clasificadores L2, fue necesario realizar consultas adicionales para tomar casos de 2023. Una vez obtenidos los datos, se guardaron en archivos ``Parquet'' para su posterior uso con la librería Pandas para Python.
+
+Por otro lado, el área de atención al cliente maneja un archivo CSV \textit{(comma-separated values)} con la jerarquía de casos L1, L2 y L3. Es decir, para cada L1, qué casos L2 le corresponden, y para cada uno de esos L2, qué casos L3 le corresponden. Las categorías L3 fueron ignoradas para este trabajo, por lo que se hará foco en las primeras dos.
+
+En total, se encontraron 15 categorías L1 y 122 categorías L2. Luego de una reunión con el área de atención al cliente para un mejor entendimiento de cada una, se descartó una categoría especial. Luego de este refinamiento quedaron 14 L1 y 117 L2.
+
+En la figura \ref{fig:catl2porl1} se puede observar para cada categoría L1 cuántas subcategorías L2 contiene.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/catl2porl1.png}
+	\caption{Cantidad de categorías L2 para cada L1.}
+	\label{fig:catl2porl1}
+\end{figure}
+
+Para trabajar en la fase de preprocesamiento, se combinó el archivo de los casos con el archivo que contenía la jerarquía de categorías, obteniendo así la L1 de cada reclamo y consulta.
+
+\subsection{\textit{Pipeline} de preprocesamiento}
+
+El preprocesamiento es una de las tareas más importantes en PNL. Los datos en crudo pueden contener información que no es relevante para la tarea en cuestión, que se debe eliminar. Por otro lado, muchos modelos de IA requieren un formateo previo de los datos para poder consumirlos.
+
+En la figura \ref{fig:pipeline-texto} se detallan los pasos realizados para ``limpiar'' el texto.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.7\textwidth]{./Figures/pipeline-texto.png}
+	\caption{Diagrama del procesamiento del texto crudo.}
+	\label{fig:pipeline-texto}
+\end{figure}
+
+El proceso comienza con el texto original del reclamo tal cual quedó guardado en la base. Luego se le aplican las siguientes acciones:
+\begin{enumerate}
+	\item Se suprimen los acentos de las palabras (si los hubiera) utilizando una expresión regular.
+	\item Se eliminan los saltos de línea.
+	\item Se sacan URLs en el mesaje en caso de que hubiese hipervínculos.
+	\item Se sacan direcciones de \textit{email}. Estos por lo general aparecen cuando el reclamo se hace a través de ese medio.
+	\item Se suprimen signos de puntuación utilizando otra expresión regular.
+	\item Se eliminan espacios múltiples para normalizar en un espacio entre dos palabras.
+	\item Se remueven frases que se repiten en muchos reclamos: algunos casos quedan registrados en la base con la respuesta por parte de la empresa. Estos mensajes tienen una plantilla de base con frases que luego se repiten entre casos.
+	\item Se unen palabras con un significado específico: por ejemplo ``pedidos ya'' se deja como ``pedidosya'' porque hace referencia a una empresa.
+	\item Para el caso de los modelos de CNB entrenados, se aplicó un paso extra para eliminar \textit{stopwords}.
+	\item Por último se realizó un análisis con los datos de entrenamiento para ver los errores gramaticales más comunes utilizando la librería PyEnchant para Python. De esto se obtuvo un listado con los errores más comunes y un mapeo a su versión correcta. En este paso se aplica la corrección sobre ese listado de palabras.
+\end{enumerate}
+
+Una vez obtenido el texto limpio, se procede a pasarlo a un vector numérico para que sea intepretado por los modelos de IA. Se distinguen dos formas de hacerlo, dependiendo de si se usa el modelo de CNB o el de BERT.
+
+\subsubsection{Codificación para CNB}
+
+En la figura \ref{fig:pipeline-baseline} se explica el proceso para obtener los vectores numéricos para entrenar el modelo de CNB. Al texto limpio se le aplica un paso de segmentación para obtener los \textit{tokens} que luego serán vectorizados utilizando el método TF-IDF. Por otro lado, a la variable objetivo que también esta en formato de texto, se le aplica el proceso de \textit{label encoding} para obtener una variable numérica. 
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.7\textwidth]{./Figures/pipeline-baseline.png}
+	\caption{Diagrama de codificación para CNB.}
+	\label{fig:pipeline-baseline}
+\end{figure}
+
+\subsubsection{Codificación para BERT}
+
+En la figura \ref{fig:pipeline-bert} se puede ver el proceso para el caso de BERT. Se puede notar que es un poco mas largo que el de CNB, pero en realidad, todos esos pasos quedan encapsulados en una sola función del BertTokenizer de la librería Transformers de Hugging Face para Python.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.7\textwidth]{./Figures/pipeline-bert.png}
+	\caption{Diagrama de codificación para BERT.}
+	\label{fig:pipeline-bert}
+\end{figure}
+
+El vocabulario del modelo pre-entrenado de BERT que se utilizó está compuesto por \citep{WEBSITE:22}
+\begin{itemize}
+	\item 977 palabras reservadas por \textit{tokens} del estilo ``[MASK]'', ``[PAD]'', etc.
+	\item \textit{Tokens} de caracteres individuales (números y letras).
+	\item \textit{Tokens} de subpalabras.
+	\item \textit{Tokens} de palabras.
+\end{itemize}
+
 
 
 \section{Entrenamiento de los modelos}
