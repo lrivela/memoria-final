@@ -150,7 +150,7 @@ En la figura \ref{fig:pipeline-baseline} se explica el proceso para obtener los 
 
 \subsubsection{Codificación para BERT}
 
-En la figura \ref{fig:pipeline-bert} se puede ver el proceso para el caso de BERT. Se puede notar que es un poco mas largo que el de CNB, pero en realidad, todos esos pasos quedan encapsulados en una sola función del BertTokenizer de la librería Transformers de Hugging Face para Python.
+En la figura \ref{fig:pipeline-bert} se puede ver el proceso para el caso de BERT. Se puede notar que es un poco mas largo que el de CNB.
 
 \begin{figure}[htbp]
 	\centering
@@ -159,26 +159,47 @@ En la figura \ref{fig:pipeline-bert} se puede ver el proceso para el caso de BER
 	\label{fig:pipeline-bert}
 \end{figure}
 
-El vocabulario del modelo pre-entrenado de BERT que se utilizó está compuesto por \citep{WEBSITE:22}
-\begin{itemize}
-	\item 977 palabras reservadas por \textit{tokens} del estilo ``[MASK]'', ``[PAD]'', etc.
-	\item \textit{Tokens} de caracteres individuales (números y letras).
-	\item \textit{Tokens} de subpalabras.
-	\item \textit{Tokens} de palabras.
-\end{itemize}
+El algoritmo de segmentación de BERT se llama \textit{WordPiece} y tiene la particularidad de que no sólo segmenta por palabras sino que también lo hace por subpalabras y por caracteres. Arranca segmentando por todos los caracteres del vocabulario con el que fue entrenado y luego los va uniendo en pares. 
 
+Utiliza la siguiente fórmula para computar los puntajes de los pares de \textit{tokens} a unir:
+\begin{equation}
+puntaje = \frac{\text{frecuencia del par}}{\text{frecuencia del primer elemento}\times \text{frecuencia del segundo elemento}}
+\end{equation}
+Luego une los pares con mayor puntaje y re-calcula para todos los \textit{tokens} resultantes. Este proceso es repetido hasta alcanzar un umbral para el puntaje o hasta alcanzar un límite de \textit{tokens}.
 
+El vocabulario del modelo pre-entrenado de BERT que se utilizó está compuesto por 977 \textit{tokens} reservados del estilo ``[MASK]'' o ``[PAD]'' por ejemplo y luego por \textit{tokens} de caracteres individuales, subpalabras y palabras. \citep{WEBSITE:22}
+
+En la figura \ref{fig:segmentacion-bert} podemos ver un ejemplo de cómo es segmentada una oración.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap3-segmentacion.png}
+	\caption{Ejemplo de segmentación \textit{WordPiece}\protect\footnotemark.}
+	\label{fig:segmentacion-bert}
+\end{figure}
+
+\footnotetext{Imagen tomada de \url{https://espejel.substack.com/p/beto-bert-01-importacion-y-tokenizing}}
+
+Luego de hacer la segmentación de cada frase, se hace un truncamiento de las secuencias largas a un máximo preestablecido y se realiza un relleno a las secuencias cortas con un \textit{token} especial hasta ocupar ese mismo máximo.
+
+Los siguientes pasos son obtener los \textit{input ids} que son los identificadores de los \textit{tokens}, obtener la máscara de atención que marca qué \textit{tokens} la red debe mirar y por último obtener los \textit{token type ids} que marcan a qué secuencia pertenece cada \textit{token} (recordar que BERT se entrena de a pares de secuencia).
+
+Por otro lado, la codificación de la variable objetivo es igual que en CNB solo que a la variable numérica obtenida se le aplica una codificación \textit{one hot} adicional.
 
 \section{Entrenamiento de los modelos}
+
 
 
 \section{Desarrollo de GitHub Actions}
 
 
+
 \section{Empaquetamiento del código y artefactos}
 
 
+
 \section{Desarrollo del \textit{pipeline} de predicción}
+
 
 
 \section{Almacenamiento de predicciones}
