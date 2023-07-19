@@ -188,6 +188,126 @@ Por otro lado, la codificación de la variable objetivo es igual que en CNB solo
 
 \section{Entrenamiento de los modelos}
 
+En esta sección se describe en detalle: los análisis exploratorios realizados sobre los datos, cómo fue concebida la solución de los modelos de IA, y las técnicas utilizadas para entrenar los modelos.
+
+\subsection{Análisis exploratorio}
+
+En la figura \ref{fig:cap3-distribucion} se observa la proporción de casos de cada categoría L1 sobre el total. Se puede ver que hay una que tiene casi el 50\%.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap3-distribucion.png}
+	\caption{Proporción de casos.}
+	\label{fig:cap3-distribucion}
+\end{figure}
+
+También se realizó un análisis de las longitudes de los textos. En promedio, la cantidad de palabras en los mensajes fue de 78 previo a aplicar preprocesamiento, 71 aplicando una parte (se dejan las \textit{stopwords}) y 44 cuando se aplicó el preprocesamiento completo.
+
+En la figura \ref{fig:cap3-longitudes} podemos observar la longitud promedio para cada categoría. En cada barra se puede ver la longitud del texto sin preprocesamiento, con preprocesamiento dejando \textit{stopwords} y también removiéndolas. Hay dos categorías cuya longitud promedio es particularmente elevada.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap3-longitudes.png}
+	\caption{Longitud de los mensajes.}
+	\label{fig:cap3-longitudes}
+\end{figure}
+
+\subsection{Integración de los modelos}
+
+A continuación se presenta la figura \ref{fig:cap3-redes} dónde se puede ver cómo fue concebida la arquitectura de la solución de los modelos de IA.
+
+Se tiene un clasificador que en primera instancia hace la predicción de las categorías de primer nivel, y luego se tienen clasificadores para cada subcategoría de segundo nivel. Esto significa que en total se entrenaron 15 modelos: el general y 14 de subcategorías.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{./Figures/cap3-redes.png}
+	\caption{Diagrama general de los modelos de IA.}
+	\label{fig:cap3-redes}
+\end{figure}
+
+Este diseño presenta una serie de ventajas, entre las que principalmente se destaca su diseño modular. Esto es importante para la etapa de soporte a futuro, ya que si surge una nueva categoría o se quiere mejorar una parte de la clasificación, sólo es necesario trabajar en el modelo afectado dejando los demás intactos.
+
+Además, al hacer que cada clasificador tenga que realizar una tarea más específica, su \textit{head} de clasificación también queda más simple.
+
+\subsection{Entrenamiento de los modelos base}
+
+Un modelo base o \textit{baseline} es un modelo simple que actúa como referencia y sirve para tener con qué comparar cuando se entrenan modelos más complejos. 
+
+Las ventajas de utilizar un modelo base son las siguientes \citep{WEBSITE:23}:
+\begin{itemize}
+	\item Se entrenan rápidamente y sin recursos especializados.
+	\item Permite tener un mejor entendimiento en etapas tempranas.
+	\item Sirven para encontrar errores y poner a prueba suposiciones.
+	\item Sirven para medir el progreso de los modelos más complejos.
+\end{itemize}
+
+Como se mencionó en el capítulo \ref{Chapter2}, para este trabajo el \textit{baseline} elegido fue CNB de la librería Scikit-Learn. La clase provista se llama \textit{ComplementNB} y provee un método \textit{fit} para realizar el entrenamiento y un método \textit{predict} para realizar una predicción sobre datos que se pasan como parámetro.
+
+El entorno donde se realizó el entrenamiento fue una computadora local.
+
+\subsubsection{Modelos base en validación cruzada}
+
+Hubo algunas categorías en particular que cuando se quiso entrenar el clasificador L2, contaban con muy pocos datos incluso tomando del año 2023. Estas categorías fueron:
+\begin{itemize}
+	\item L2\_L.
+	\item L2\_N.
+\end{itemize}
+
+La primera contaba con un total de 200 casos y cuando se incluyeron los de 2023  se llegó a tener 267. Para este caso, lo que se hizo fue obtener una métrica en validación cruzada usando la clase RepeatedStratifiedKFold de Scikit-Learn con 5 \textit{folds} y 5 repeats. Luego se procedió a entrenar el modelo CNB final utilizando el set de datos completo.
+
+La segunda contaba originalmente con sólo 2 casos y cuando se incluyeron los de 2023 se llegó a 8. Este resultó ser un caso muy extremo, donde se utilizó otra técnica de validación cruzada con la clase LeaveOneOut de Scikit-Learn. Lo que hace esta técnica es ir apartando un dato por \textit{fold} y entrenar con el resto. Una vez tomada la métrica, se entrenó el CNB final con todos los datos.
+
+\subsection{Entrenamiento de BERT}
+
+Como los textos del \textit{dataset} estaban escritos en español, se utilizó la red BETO. Este modelo es un modelo BERT entrenado con el dataset \textit{spanish unannotated corpora} que cuenta con casi tres millardos de palabras. Está disponible dentro de la librería Transformers de HuggingFace para Python, tanto en Pytorch como en Tensorflow. Para este trabajo se utilizó esta última.
+
+Por otro lado, estos modelos pre-entrenados deben ser adaptados para realizar tareas como clasificación de texto. En la figura \ref{fig:cap3-downstream} se muestra un esquema de entrenamiento de BETO.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.9\textwidth]{./Figures/cap3-downstream.png}
+	\caption{Esquema de entrenamiento de BERT para clasificación de texto.}
+	\label{fig:cap3-downstream}
+\end{figure}
+
+Se puede notar que sobre el modelo pre-entrenado de BETO se agrega: un \textit{head} de clasificación compuesto por perceptrones multicapa combinados con técnicas de regularización como \textit{dropout} y por último \textit{softmax} como función de activación para realizar la tarea de clasificación per se.
+
+\subsubsection{Aprendizaje por transferencia}
+
+El aprendizaje por transferencia consiste en entrenar un modelo en un conjunto de datos (por lo general a gran escala) y luego usar ese modelo previamente entrenado para llevar a cabo el aprendizaje para otra tarea posterior (la tarea objetivo) \citep{WEBSITE:24}.
+
+Se distinguen tres métodos para transferir el aprendizaje:
+\begin{itemize}
+	\item Extracción de características: se usan las capas pre-entrenadas para extraer características o \textit{features} de los datos. Los pesos de las capas inferiores no se actualizan durante el \textit{backpropagation}.
+	\item Ajuste fino: se ajustan todos los parámetros del modelo.
+	\item Extracción de capas: se extraen sólo las capas necesarias para la tarea en cuestión.
+\end{itemize}
+
+Para este trabajo, el aprendizaje por transferencia consistió en utilizar el modelo pre-entrenado de BETO y luego ajustarlo para la tarea de clasificación de reclamos.
+
+En primera instancia se utilizó el método de extracción de características que consistió en congelar las capas de BETO y dejar libre el \textit{head} de clasificación para entrenar sus pesos. Para esto, se dejó el \textit{learning rate} default de Tensorflow.
+
+[FIGURA CANDADITO]
+
+Luego, se realizó un ajuste fino, dejando libres todas las capas del modelo para ajustar todos sus pesos, esta vez con un \textit{learning rate} más bajo.
+
+[FIGURA SIN CANDADITO]
+
+La técnica de extracción de capas no fue utilizada en este trabajo.
+
+\subsubsection{Entorno de entrenamiento}
+
+
+
+\subsubsection{Puntos de control y parada temprana}
+
+
+
+\subsubsection{Efecto de usar \textit{stopwords} en el entrenamiento}
+
+\subsubsection{Técnicas para el desbalanceo de clases}
+
+\subsubsection{Optimizadores}
 
 
 \section{Desarrollo de GitHub Actions}
