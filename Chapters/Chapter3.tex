@@ -274,7 +274,7 @@ Se puede notar que sobre el modelo pre-entrenado de BETO se agrega: un \textit{h
 
 \subsubsection{Aprendizaje por transferencia}
 
-El aprendizaje por transferencia consiste en entrenar un modelo en un conjunto de datos (por lo general a gran escala) y luego usar ese modelo previamente entrenado para llevar a cabo el aprendizaje para otra tarea posterior (la tarea objetivo) \citep{WEBSITE:24}.
+El aprendizaje por transferencia consiste en entrenar un modelo en un conjunto de datos a gran escala y luego usar ese modelo previamente entrenado para llevar a cabo el aprendizaje para otra tarea posterior (la tarea objetivo) \citep{WEBSITE:24}.
 
 Se distinguen tres métodos para transferir el aprendizaje:
 \begin{itemize}
@@ -287,27 +287,123 @@ Para este trabajo, el aprendizaje por transferencia consistió en utilizar el mo
 
 En primera instancia se utilizó el método de extracción de características que consistió en congelar las capas de BETO y dejar libre el \textit{head} de clasificación para entrenar sus pesos. Para esto, se dejó el \textit{learning rate} default de Tensorflow.
 
-[FIGURA CANDADITO]
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.4\textwidth]{./Figures/cap3-feature-extraction.png}
+	\caption{Técnica de extracción de características.}
+	\label{fig:cap3-feature-extraction}
+\end{figure}
 
 Luego, se realizó un ajuste fino, dejando libres todas las capas del modelo para ajustar todos sus pesos, esta vez con un \textit{learning rate} más bajo.
 
-[FIGURA SIN CANDADITO]
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.4\textwidth]{./Figures/cap3-fine-tuning.png}
+	\caption{Técnica de ajuste fino.}
+	\label{fig:cap3-fine-tuning}
+\end{figure}
 
 La técnica de extracción de capas no fue utilizada en este trabajo.
 
 \subsubsection{Entorno de entrenamiento}
 
+Como se menciona en el capítulo \ref{Chapter2}, para entrenar a BETO se utilizó un entorno de trabajo en la nube llamado Vertex AI Workbench. Se diferencian dos tipos de instancias:
+\begin{itemize}
+	\item Los \textit{notebooks} administrados: son entornos administrados por Google.
+	\item Los \textit{notebooks} administrados por el usuario: permiten una mayor personalización y son ideales cuando se necesita mayor control sobre el entorno.
+\end{itemize}
 
+La instancia utilizada fue la segunda: las administradas por el usuario. El \textit{hardware} con el que contaba era el siguiente:
+\begin{table}[h]
+	\centering
+	\caption[Especificaciones técnicas Vertex]{Especificaciones técnicas del entorno de entrenamiento.}
+	\begin{tabular}{l c}    
+		\toprule
+		\textbf{Componente}			& 			\textbf{Descripción}  \\
+		\midrule	
+		Versión del ambiente		& 			M107  \\
+		Tipo de máquina 			& 			n1-standard-8  \\
+		Versión de CPU				&			Intel Xeon E5 \\
+		Nro. de núcleos virtuales 	& 			8 vCPUs \\
+		Memoria RAM 				& 			30 GB  \\
+		Nro. de placas de video 	& 			1  \\
+		Versión de placa de video 	& 			NVIDIA T4 \\
+		Memoria de placa de video	& 			16 GB GDDR6  \\
+		Almacenamiento				&			1 HDD x 200 GB \\
+		\bottomrule
+		\hline
+	\end{tabular}
+	\label{tab:vertex}
+\end{table}
 
-\subsubsection{Puntos de control y parada temprana}
+Por otro lado, se decidió utilizar el entorno TensorFlow Enterprise 2.11 como imagen virtual de la instancia, lo que permitió tener todos los \textit{drivers} de la placa de video pre-instalados y además contaba con el sistema de paquetes Conda con las librerías de TensorFlow para Python también pre-instaladas. Tener esa configuración cubierta por la nube de Google resultó en una gran ventaja porque evitó el tener que analizar la compatibilidad entre el \textit{hardware} y el \textit{software}.
 
+\subsubsection{Puntos de control}
 
+Para evitar pérdida de información accidental en la etapa de entrenamiento se utilizó una clase de TensorFlow que se llama ModelCheckpoint.
+
+ModelCheckpoint es un \textit{callback} que, dependiendo de como se configure, puede ejecutarse al finalizar una época o cada cierta cantidad de lotes o \textit{batches}. Su función principal es guardar los pesos de la red y el estado del optimizador al almacenamiento permanente para no perder esa información en caso de que se apague la instancia o surja algún error. Se pueden configurar criterios de guardado como, por ejemplo, sólo si mejoró una métrica o la función de pérdida.
+
+La configuración usada fue:
+\begin{table}[h]
+	\centering
+	\caption[Configuración ModelCheckpoint]{Configuración del ModelCheckpoint.}
+	\begin{tabular}{l c}    
+		\toprule
+		\textbf{Parámetro}			& 			\textbf{Valor}  \\
+		\midrule	
+		Nombre del archivo			& 			Nombre del archivo en extensión h5  \\
+		Métrica a monitorear 		& 			Pérdida para lote de entrenamiento  \\
+		Guardar sólo el mejor		&			Sí \\
+		Modo de la métrica 			& 			Minimizar \\
+		Frecuencia de guardado 		& 			En cada época  \\
+		\bottomrule
+		\hline
+	\end{tabular}
+	\label{tab:checkpoint}
+\end{table}
+
+\subsubsection{Parada temprana}
+
+Otro de los mecanismos de prevención de sobreajuste o \textit{overfitting} utilizados fue la parada temprana o \textit{early stopping}. La idea detrás de esta técnica es detener el entrenamiento cuando el modelo empieza a disminuir su capacidad de generalización.
+
+Esto se puede notar en la imagen \ref{fig:cap3-overfitting} donde la función de pérdida para el lote de entrenamiento continúa disminuyendo pero para el lote de validación no.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{./Figures/cap3-overfitting.png}
+	\caption{Funciones de pérdida a través de las épocas.}
+	\label{fig:cap3-overfitting}
+\end{figure}
+
+La clase de TensorFlow utilizada para esto fue EarlyStopping. También es un \textit{callback} pero este lo que hace es ir monitoreando una métrica que se pasa como parámetro y luego de un par de épocas en las que no mejora o empeora, detiene el entrenamiento.
+
+La configuración utilizada fue la siguiente:
+\begin{table}[h]
+	\centering
+	\caption[Configuración EarlyStopping]{Configuración de EarlyStopping.}
+	\begin{tabular}{l c}    
+		\toprule
+		\textbf{Parámetro}			& 			\textbf{Valor}  \\
+		\midrule	
+		Paciencia					& 			5 épocas  \\
+		Restaurar mejores pesos 	& 			Sí  \\
+		\bottomrule
+		\hline
+	\end{tabular}
+	\label{tab:earlystopping}
+\end{table}
 
 \subsubsection{Efecto de usar \textit{stopwords} en el entrenamiento}
 
+
+
 \subsubsection{Técnicas para el desbalanceo de clases}
 
+
+
 \subsubsection{Optimizadores}
+
 
 
 \section{Desarrollo de GitHub Actions}
