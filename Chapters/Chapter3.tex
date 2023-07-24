@@ -273,6 +273,7 @@ Por otro lado, estos modelos pre-entrenados deben ser adaptados para realizar ta
 Se puede notar que sobre el modelo pre-entrenado de BETO se agrega: un \textit{head} de clasificación compuesto por perceptrones multicapa combinados con técnicas de regularización como \textit{dropout} y por último \textit{softmax} como función de activación para realizar la tarea de clasificación per se.
 
 \subsubsection{Aprendizaje por transferencia}
+\label{section:tf}
 
 El aprendizaje por transferencia consiste en entrenar un modelo en un conjunto de datos a gran escala y luego usar ese modelo previamente entrenado para llevar a cabo el aprendizaje para otra tarea posterior (la tarea objetivo) \citep{WEBSITE:24}.
 
@@ -385,38 +386,95 @@ La configuración utilizada fue la siguiente:
 	\begin{tabular}{l c}    
 		\toprule
 		\textbf{Parámetro}			& 			\textbf{Valor}  \\
-		\midrule	
+		\midrule
+		Métrica a monitorear		& 			Pérdida para lote de validación  \\
+		Delta mínimo				& 			0 \\
 		Paciencia					& 			5 épocas  \\
+		Verboso						& 			Sí  \\
+		Modo						& 			Automático  \\	
 		Restaurar mejores pesos 	& 			Sí  \\
+		Comienzo					& 			Época 0  \\	
 		\bottomrule
 		\hline
 	\end{tabular}
 	\label{tab:earlystopping}
 \end{table}
 
-\subsubsection{Efecto de usar \textit{stopwords} en el entrenamiento}
+\subsubsection{Variaciones en el entrenamiento}
 
+Al momento de realizar los distintos entrenamientos de BETO, se analizaron qué variaciones se podían realizar en sus etapas desde el preprocesamiento hasta el entrenamiento per se, con el objetivo de intentar maximizar el desempeño del modelo. 
 
+Una de esas variaciones fue dejar o remover las \textit{stopwords}. Esto se puede ver en la imagen \ref{fig:pipeline-texto} donde el paso de ``Remoción de \textit{stopwords}'' aparece en líneas punteadas. Por la forma en que los modelos de BERT aprenden del contexto, en todos los resultados el desempeño mejoró al dejarlas.
 
-\subsubsection{Técnicas para el desbalanceo de clases}
+Otra variación que se intentó probar fue cambiar el largo de la secuencia. Los modelos de BERT admiten hasta un máximo de 512 \textit{tokens}. El desafío aquí es que a mayor largo de secuencia, habrá mayor consumo de memoria, y la placa de video utilizada estaba limitada en 16 GB. Otra consecuencia es que al consumir más memoria, obliga a reducir el \textit{batch size}.
 
+Para la primer parte del entrenamiento, donde las capas inferiores estaban bloqueadas se utilizó un largo de secuencia de 128 con el tamaño del \textit{batch} en 128 muestras.
 
+Para la segunda parte del entrenamiento, donde se realizó un ajuste fino a todas las capas de la red, se utilizó también un largo de secuencia de 128 pero en este caso hubo que reducir el tamaño del \textit{batch} a 24 muestras.
+
+Cuando recién se estaban arrancando con los entrenamientos, se probó utilizar un largo de secuencia de 512 y con un \textit{batch} de 8, pero estas pruebas fueron desestimadas porque no había mejoras significativas en el desempeño y el entrenamiento demandaba mucho tiempo.
+
+\subsubsection{Técnicas para el desbalance de clases}
+
+La distribución de categorías presentaban un desbalance por la naturaleza misma de los reclamos. Hay reclamos con mayor probabilidad de ocurrencia que otros, ya sea porque una funcionalidad se utiliza más, porque tiene mayor propensión a fallar o simplemente porque genera más consultas por parte de los usuarios.
+
+Entre los métodos disponibles para tratar el desbalance había \citep{ARTICLE:7} \citep{WEBSITE:25}:
+\begin{itemize}
+	\item Reagrupar categorías minoritarias en una sola.
+	\item Sobremuestreo aleatorio: consiste en repetir casos de las clases minoritarias de forma aleatoria.
+	\item Submuestreo aleatorio: consiste en eliminar casos de las clases mayoritarias de forma aleatoria.
+	\item \textit{Text augmentation}: consiste en realizar manipulaciones sobre los textos originales como, por ejemplo, reemplazar palabras por sus sinónimos de forma aleatoria, para generar nuevos casos de las clases minoritarias.
+	\item \textit{Hidden space augmentation}: consiste en generar nuevos vectores en el espacio de representación de BERT reemplazando partes pequeñas de un vector con otras de otro vector de la misma clase.
+	\item Pesos para las clases: consiste en modificar la función de pérdida de la red a través del uso de un vector con pesos ponderados para cada clase, dándole mayor importancia a las clases minoritarias.
+\end{itemize}
+
+La primera opción de reagrupar categorías fue descartada porque el área de atención al cliente tiene categorías de reclamo pre-definidas que no se pueden modificar.
+
+La opción de sobremuestreo podía generar sobreajuste por lo que fue descartada. Por otro lado, la opción de submuestreo también fue descartada porque implicaba pérdida de información importante para los reclamos que tienen mayor probabilidad de ocurrencia, y que en definitiva son los que suelen tratar más a menudo en el área.
+
+Las opciones de \textit{augmentation} no llegaron a probarse por su complejidad y tiempo adicional que llevaría en el desarrollo. Sin embargo, pueden ser una gran alternativa para probar en caso de que se quiera seguir evolucionando el modelo a futuro.
+
+Para este trabajo, se decidió probar \textit{class weights} o pesos para las clases utilizando la clase class\_weight de Scikit-Learn para generar el vector de pesos y luego pasándolo como parámetro a TensorFlow en la etapa de entrenamiento.
 
 \subsubsection{Optimizadores}
 
+Inicialmente, en los entrenamientos realizados se utilizó el optimizador Adam, que es el que viene por defecto en la librería de TensorFlow. De hecho, cuando fue lanzado BERT, sus autores mencionan que \citep{ARTICLE:8}:
+\begin{itemize}
+	\item Utilizaron el optimizador Adam con un \textit{batch size} de 256, un \textit{learning rate} de 1e-4 y 40 épocas para el pre-entrenamiento.
+	\item Utilizaron el optimizador Adam con un \textit{batch size} de 16 o 32, un \textit{learning rate} de 5e-5, 3e-5 o 2e-5 y un número de épocas de entre 2 y 4 para realizar el ajuste fino.
+\end{itemize}
 
+Sin embargo, diversos artículos mencionan que utilizar el optimizador LAMB \textit{(Layer-wise adaptive moments optimizer for batch training)} tiene un mejor desempeño en pruebas, una mejor capacidad de generalización y además permite entrenar con \textit{batches} de mayor tamaño y \textit{learning rates} más grandes, por lo que también se decidió probar con este optimizador para los entrenamientos \citep{ARTICLE:9} \citep{WEBSITE:26}.
 
-\section{Desarrollo de GitHub Actions}
+El algoritmo está basado en Adam, por lo que es muy similar a este. La principal diferencia es que calcula una relación conocida como ``factor de confianza'' que sirve para normalizar los gradientes y evitar divergencias. Esta normalización es doble: (i) normaliza por dimensión con respecto a la raíz cuadrada del segundo momento utilizado en Adam y (ii) normaliza por capas.
 
+En la figura \ref{fig:cap3-lamb} se puede observar los valores de la función de pérdida y el nivel exactitud en pruebas para Adam (en azul) y LAMB (en rojo) a través del tiempo en el conjunto de datos MNIST.
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{./Figures/cap3-adam-vs-lamb.png}
+	\caption{Función de pérdida y exactitud para Adam (azul) y LAMB (rojo) para MNIST\protect\footnotemark.}
+	\label{fig:cap3-lamb}
+\end{figure}
+
+\footnotetext{Imagen tomada de \url{https://towardsdatascience.com/an-intuitive-understanding-of-the-lamb-optimizer-46f8c0ae4866}}
 
 \section{Empaquetamiento del código y artefactos}
+
+Para empaquetar el código se utilizó la herramienta Docker en conjunto con un GitHub Workflow desarrollado en el mismo repositorio. Los pasos realizados fueron los siguientes:
+\begin{enumerate}
+	\item Escribir los archivos de código que hacen la predicción.
+	\item Escribir un archivo con las librerías de Python necesarias.
+	\item Escribir el GitHub Workflow para generar una imagen de Docker y cargarla al Artifact Registry.
+	\item Cargar las credenciales de la nube de Google como \textit{secret} en el repositorio.
+	\item Escribir el Dockerfile.
+	\item Ejecutar el Workflow y verificar la creación de la imagen en el Artifact Registry.
+\end{enumerate}
+
+A continuación en la figura \ref{} se puede ver la integración de los distintos componentes para generar una imagen de Docker.
 
 
 
 \section{Desarrollo del \textit{pipeline} de predicción}
 
-
-
-\section{Almacenamiento de predicciones}
 
