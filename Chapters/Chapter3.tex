@@ -2,42 +2,6 @@
 
 \label{Chapter3} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
-\definecolor{mygreen}{rgb}{0,0.6,0}
-\definecolor{mygray}{rgb}{0.5,0.5,0.5}
-\definecolor{mymauve}{rgb}{0.58,0,0.82}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% parámetros para configurar el formato del código en los entornos lstlisting
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\lstset{ %
-  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
-  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
-  breaklines=true,                 % sets automatic line breaking
-  captionpos=b,                    % sets the caption-position to bottom
-  commentstyle=\color{mygreen},    % comment style
-  deletekeywords={...},            % if you want to delete keywords from the given language
-  %escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
-  %extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
-  %frame=single,	                % adds a frame around the code
-  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-  keywordstyle=\color{blue},       % keyword style
-  language=[ANSI]C,                % the language of the code
-  %otherkeywords={*,...},           % if you want to add more keywords to the set
-  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
-  numbersep=5pt,                   % how far the line-numbers are from the code
-  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
-  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
-  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-  showstringspaces=false,          % underline spaces within strings only
-  showtabs=false,                  % show tabs within strings adding particular underscores
-  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
-  stringstyle=\color{mymauve},     % string literal style
-  tabsize=2,	                   % sets default tabsize to 2 spaces
-  title=\lstname,                  % show the filename of files included with \lstinputlisting; also try caption instead of title
-  morecomment=[s]{/*}{*/}
-}
-
 
 En este capítulo se describe cómo se han utilizado las herramientas mencionadas en el capítulo \ref{Chapter2} y sus integraciones. Se presenta la arquitectura de alto nivel completa y luego se describe detalladamente desde el consumo de datos hasta la salida del proceso y su almacenamiento.
 
@@ -471,8 +435,40 @@ Para empaquetar el código se utilizó la herramienta Docker en conjunto con un 
 	\item Ejecutar el Workflow y verificar la creación de la imagen en el Artifact Registry.
 \end{enumerate}
 
-A continuación en la figura \ref{} se puede ver la integración de los distintos componentes para generar una imagen de Docker.
+A continuación, en la figura \ref{fig:cap3-docker-integracion} se puede ver la integración de los distintos componentes para generar una imagen de Docker.
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.6\textwidth]{./Figures/cap3-docker-integracion.png}
+	\caption{Interacción de los distintos componentes.}
+	\label{fig:cap3-docker-integracion}
+\end{figure}
+
+En el repositorio de GitHub se encuentran los archivos de código y el Dockerfile. Además dentro del mismo repositorio se encuentra un archivo ``.yaml'' que describe un GitHub Workflow. Este archivo contiene una secuencia de pasos (los GitHub Actions) que deben ejecutarse para generar una imagen de Docker. Estos Actions son ejecutados por un GitHub Runner, que son máquinas virtuales hospedadas por la plataforma. Entre otras cosas, se ejecutan Actions para clonar el código en el Runner, autenticarlo contra la nube de Google, configurar Docker para conectarse al Artifact Registry y comenzar el proceso de construcción.
+
+En la figura \ref{fig:cap3-gh-docker} puede verse el menú de GitHub desde donde ejecutar el flujo manualmente para generar la imagen de Docker.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{./Figures/cap3-gh-docker.png}
+	\caption{Menú de GitHub para ejecutar el flujo de trabajo.}
+	\label{fig:cap3-gh-docker}
+\end{figure}
+
+El Dockerfile es un archivo que incluye instrucciones para crear una imagen de Docker. En la figura \ref{fig:cap3-docker-dockerfile} puede verse en detalle.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.6\textwidth]{./Figures/cap3-docker-dockerfile.png}
+	\caption{Vista detallada de un Dockerfile.}
+	\label{fig:cap3-docker-dockerfile}
+\end{figure}
+
+Este archivo debe comenzar con una sentencia ``\textit{FROM}'' que indica la imagen padre desde la cual se va a crear la imagen. Para este trabajo se utilizó una imagen de la empresa Nvidia que está basada en el sistema operativo Ubuntu y que incluye todos los \textit{drivers} necesarios para utilizar una placa de video. La imagen se encuentra alojada en un repositorio público llamado Docker Hub.
+
+Con el comando ``\textit{WORKDIR}'' se configura el directorio de trabajo dentro de la imagen de Docker y luego con el comando ``\textit{COPY}'' se le agregan los archivos Python y SQL del repositorio.
+
+Con la ayuda del comando ``\textit{RUN}'' se instalan paquetes de Linux, el intérprete de Python y sus dependencias. Por último se especifica el comando a ejecutar para iniciar el contenedor de Docker con la sentencia ``\textit{CMD}''.
 
 
 \section{Desarrollo del \textit{pipeline} de predicción}
