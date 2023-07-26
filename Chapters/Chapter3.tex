@@ -473,4 +473,60 @@ Con la ayuda del comando ``\textit{RUN}'' se instalan paquetes de Linux, el int�
 
 \section{Desarrollo del \textit{pipeline} de predicción}
 
+En esta sección se describe cómo se ejecuta el código en la nube de Google para generar las predicciones del modelo y su posterior almacenamiento en una base de datos.
+
+\subsection{Creación y ejecución del flujo de trabajo}
+
+La herramienta seleccionada para dirigir la ejecución de código fue Apache Airflow, que en su versión administrada por la nube de Google se llama Cloud Composer.
+
+En la figura \ref{fig:cap3-pipeline} puede verse cómo es el flujo para cargar un DAG a Airflow, desde su creación en el repositorio de código hasta su ejecución en un Pod de Kubernetes.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{./Figures/cap3-pipeline.png}
+	\caption{Interacción de los componentes del \textit{pipeline}.}
+	\label{fig:cap3-pipeline}
+\end{figure}
+
+El proceso arranca generando un DAG en el repositorio dedicado para Airflow, que tiene un GitHub Workflow que sincroniza el archivo contra un contenedor de Cloud Storage llamado \textit{bucket}. 
+
+El Cloud Composer está continuamente monitoreando si se cargaron nuevos archivos al \textit{bucket} que tiene configurado, y cuando así sucede, los carga en la base de Airflow. Luego lo procede a mostrar en su portal \textit{web}.
+
+Un DAG puede ser programado para ejecutarse a intervalos regulares de tiempo o también puede ser ejecutado manualmente. Cuando se ejecuta, se comienzan a ejecutar distintos operadores en su flujo de trabajo. En la figura \ref{} puede verse la estructura del DAG desarrollado.
+
+[FIGURA DAG]
+
+Todos los operadores que componen este DAG son del tipo GKEStartPodOperator. Este operador hace que Airflow se conecte con el motor de Kubernetes Engine que se pase como parámetro e instancia un Pod. Las configuraciones más importantes que se utilizaron fueron:
+\begin{itemize}
+	\item El nombre del \textit{cluster} de GKE donde se va a instanciar el Pod.
+	\item La localización del \textit{cluster} de GKE.
+	\item La imagen de Docker que se generó en el Artifact Registry con el código.
+	\item Variables de entorno que se le van a pasar al Pod: qué archivo de Python ejecutar, las tablas donde guardar información temporal, los \textit{datasets} de las tablas, el \textit{storage} donde están los archivos con los pesos de los modelos, etc.
+	\item Los recursos del pod (CPU, RAM, Cantidad de placas de video).
+	\item El nodo de Kubernetes donde asignar la ejecución del Pod para asegurar que tenga placa de video.
+\end{itemize}
+
+Al final del DAG se define el ruteo entre los operadores para definir como se conectan y cómo son las reglas de ejecución.
+
+Los estados por los que pasa un Pod para instanciarse pueden verse en la figura \ref{fig:cap3-pod-lc}.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{./Figures/pod-lifecycle.jpeg}
+	\caption{Estados del ciclo de vida de un Pod de Kubernetes\protect\footnotemark.}
+	\label{fig:cap3-pod-lc}
+\end{figure}
+
+\footnotetext{Imagen tomada de \url{https://sunitc.dev/2020/12/26/kubernetes-pods/}}
+
+A continuación se explica cada uno de ellos \citep{WEBSITE:27}:
+\begin{itemize}
+	\item \textit{Pending}: Cuando el Pod ha sido aceptado por el \textit{cluster} de Kubernetes, pero los contenedores aún no están listos. Por ejemplo, la imagen de Docker aún se está descargando.
+	\item \textit{Running}: Cuando el Pod ha sido asignado a un nodo de Kubernetes y tiene su contenedor corriendo.
+	\item \textit{Succeeded}: Cuando el contenedor del Pod ha terminado exitosamente. Por ejemplo, finalizó la ejecución del código de Python.
+	\item \textit{Failed}: Cuando el contenedor termina con un error. Por ejemplo, un error de programación en el código o un error en la configuración de Kubernetes.
+\end{itemize}
+
+\subsection{Parametrización de los contenedores}
+
 
