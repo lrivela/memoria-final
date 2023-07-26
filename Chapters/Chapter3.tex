@@ -310,7 +310,7 @@ Para evitar pérdida de información accidental en la etapa de entrenamiento se 
 ModelCheckpoint es un \textit{callback} que, dependiendo de como se configure, puede ejecutarse al finalizar una época o cada cierta cantidad de lotes o \textit{batches}. Su función principal es guardar los pesos de la red y el estado del optimizador al almacenamiento permanente para no perder esa información en caso de que se apague la instancia o surja algún error. Se pueden configurar criterios de guardado como, por ejemplo, sólo si mejoró una métrica o la función de pérdida.
 
 La configuración usada fue:
-\begin{table}[h]
+\begin{table}[ht]
 	\centering
 	\caption[Configuración ModelCheckpoint]{Configuración del ModelCheckpoint.}
 	\begin{tabular}{l c}    
@@ -492,9 +492,14 @@ El proceso arranca generando un DAG en el repositorio dedicado para Airflow, que
 
 El Cloud Composer está continuamente monitoreando si se cargaron nuevos archivos al \textit{bucket} que tiene configurado, y cuando así sucede, los carga en la base de Airflow. Luego lo procede a mostrar en su portal \textit{web}.
 
-Un DAG puede ser programado para ejecutarse a intervalos regulares de tiempo o también puede ser ejecutado manualmente. Cuando se ejecuta, se comienzan a ejecutar distintos operadores en su flujo de trabajo. En la figura \ref{} puede verse la estructura del DAG desarrollado.
+Un DAG puede ser programado para ejecutarse a intervalos regulares de tiempo o también puede ser ejecutado manualmente. Cuando se ejecuta, se comienzan a ejecutar distintos operadores en su flujo de trabajo. En la figura \ref{fig:cap3-dag} puede verse la estructura del DAG desarrollado.
 
-[FIGURA DAG]
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap3-dag.png}
+	\caption{Vista en forma de grafo del DAG desde el menú de Airflow.}
+	\label{fig:cap3-dag}
+\end{figure}
 
 Todos los operadores que componen este DAG son del tipo GKEStartPodOperator. Este operador hace que Airflow se conecte con el motor de Kubernetes Engine que se pase como parámetro e instancia un Pod. Las configuraciones más importantes que se utilizaron fueron:
 \begin{itemize}
@@ -506,9 +511,9 @@ Todos los operadores que componen este DAG son del tipo GKEStartPodOperator. Est
 	\item El nodo de Kubernetes donde asignar la ejecución del Pod para asegurar que tenga placa de video.
 \end{itemize}
 
-Al final del DAG se define el ruteo entre los operadores para definir como se conectan y cómo son las reglas de ejecución.
+Al final del DAG se define el ruteo entre los operadores para definir como se conectan y cómo son las reglas de ejecución. Para este trabajo, como todo se encuentra en un ambiente de desarrollo, la ejecución de los operadores es secuencial (va de a uno por vez).
 
-Los estados por los que pasa un Pod para instanciarse pueden verse en la figura \ref{fig:cap3-pod-lc}.
+Los estados por los que pasa un Pod pueden verse en la figura \ref{fig:cap3-pod-lc}.
 
 \begin{figure}[htbp]
 	\centering
@@ -529,4 +534,25 @@ A continuación se explica cada uno de ellos \citep{WEBSITE:27}:
 
 \subsection{Parametrización de los contenedores}
 
+Para que el contenedor sepa para que categoría debe hacer la predicción, se especifican unas variables de entorno en el GKEStartPodOperator que luego se pasan al contenedor en el momento de su creación. Así, en tiempo de ejecución, el contenedor sabe para qué categoría está clasificando y ajustar su comportamiento en base a eso.
 
+En la figura \ref{fig:cap3-prediccion} se puede ver en detalle este comportamiento:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{./Figures/cap3-prediccion.png}
+	\caption{Diagrama de parametrización de un contenedor.}
+	\label{fig:cap3-prediccion}
+\end{figure}
+
+El contenedor recibe qué archivo de Python debe ejecutar: 
+\begin{itemize}
+	\item El de clasificación L1.
+	\item El de clasificación L2 con BERT.
+	\item El de clasificación L2 con CNB.
+	\item El de unificación de las tablas temporales y generación de la tabla de predicción.
+\end{itemize}
+
+También recibe el nombre de la tabla donde almacenar la predicción y si es el \textit{dataset} temporal o es el definitivo en el paso de unificación. Por otro lado también recibe la tabla con las predicciones temporales de L1 para los pasos de clasificación de L2.
+
+Por último, otros parámetros que recibe son el nombre del modelo y el codificador para descargarlos desde el almacenamiento.
