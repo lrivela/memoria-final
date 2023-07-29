@@ -4,11 +4,70 @@
 
 \label{Chapter4} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
-%----------------------------------------------------------------------------------------
-%	SECTION 1
-%----------------------------------------------------------------------------------------
+En este capítulo se presenta y describe la métrica elegida para evaluar el desempeño de los modelos, se muestran los resultados de desempeño de cada uno de los modelos entrenados y por último, se explican las simulaciones realizadas en un ambiente de desarrollo para probar la ejecución del flujo de trabajo de Airflow.
 
-\section{Pruebas funcionales del hardware}
-\label{sec:pruebasHW}
+\section{Métrica de evaluación de los modelos}
 
-La idea de esta sección es explicar cómo se hicieron los ensayos, qué resultados se obtuvieron y analizarlos.
+Para evaluar un sistema de clasificación automático, en general se suele usar una matriz de confusión. Esta matriz es una tabla de doble entrada, donde cada columna muestra el número de predicciones de cada clase y cada fila muestra el número real de instancias de cada clase. En la figura \ref{fig:matriz-confusion} puede observarse una para clasificación multiclase:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/matriz-confusion.png}
+	\caption{Ejemplo de matriz de confusión multiclase genérica\protect\footnotemark.}
+	\label{fig:matriz-confusion}
+\end{figure}
+
+\footnotetext{Imagen tomada de \url{https://wbarriosb.medium.com/calculando-la-precisi\%C3\%B3n-en-un-modelo-de-clasificaci\%C3\%B3n-multiclase-224d96f52043}}
+
+Para entender esta matriz, es necesario presentar cuatro conceptos que vienen asociados:
+\begin{itemize}
+	\item Verdaderos positivo (VP o TP): la cantidad de positivos clasificados como positivos por el modelo.
+	\item Falso negativo (FN): la cantidad de positivos clasificados como negativos por el modelo.
+	\item Verdadero negativo (VN o TN): la cantidad de negativos clasificados como negativos por el modelo.
+	\item Falso positivo (FP): la cantidad de negativos clasificados como positivos por el modelo.
+\end{itemize}
+
+Presentar los resultados en esta matriz permite calcular distintas métricas para evaluar características del sistema de clasificación. Por ejemplo:
+
+La precisión, que está relacionada con la capacidad del modelo de no predecir un positivo cuando en realidad es un negativo:
+\begin{equation}
+\text{precisión}_{k}=\frac{MC(k,k)}{\sum_{i=1,j=k}^{N}MC(i,j)}
+\end{equation}
+
+La exhaustividad, que está relacionada con la capacidad del modelo de detectar todos los positivos:
+\begin{equation}
+\text{exhaustividad}_{k}=\frac{MC(k,k)}{\sum_{j=1,i=k}^{N}MC(i,j)}
+\end{equation}
+
+Para este trabajo, la métrica seleccionada para evaluar el desempeño de los modelos fue el puntaje F1 o \textit{F1-Score}. Lo que hace esta métrica es calcular la media armónica entre la precisión y la exhaustividad \textit{(recall)} del modelo. Su fórmula es la siguiente:
+\begin{equation}
+\text{F1}_{k}=2\times \frac{\text{precisión}_{k}\times \text{exhaustividad}_{k}}{\text{precisión}_{k}+ \text{exhaustividad}_{k}}
+\end{equation}
+
+De esta forma, se estaría obteniendo el F1 para cada clase. Para calcular un F1 global del sistema de clasificación, existen tres tipos de estrategia \citep{WEBSITE:28}
+\begin{itemize}
+	\item \textit{Macro average}: Consiste en calcular la media aritmética de todos los F1 calculados para cada clase. Esta estrategia le da a todas las clases la misma importancia en el cálculo del F1 global.
+	\item \textit{Micro average}: Consiste en calcular el F1 considerando el número total de TP, FP y FN, en lugar de hacerlo por cada clase. Esta estrategia calcula la proporción de las observaciones clasificadas correctamente sobre las observaciones totales.
+	\item \textit{Weighted average}: Consiste en calcular la media aritmética de todos los F1 calculados para cada clase, pero ponderando el soporte de cada clase (la cantidad de observaciones). Esta estrategia le da más importancia a las clases con más observaciones para el cálculo del F1 global.
+\end{itemize}
+
+Para \textit{datasets} balanceados, es decir, cuando tienen una cantidad de observaciones parecida para cada una de las clases, se suele usar el \textit{micro average}. No es el caso de este trabajo, donde por la naturaleza de los reclamos, hubo categorías que presentaron más observaciones que otras.
+
+Dentro de las dos opciones restantes, se decidió por utilizar el \textit{weighted} F1, ya que para medir el desempeño del modelo, se pretende dar una mayor importancia a las clases cuyos reclamos aparecen más a menudo. 
+
+La fórmula se muestra a continuación:
+\begin{equation}
+\text{F1}_{global}=\sum_{k=1}^{N}\text{F1}_{k} \times \text{soporte}_{k} 
+\end{equation}
+
+\section{Resultados de desempeño en pruebas}
+
+En esta sección se presentan los resultados obtenidos para todos los modelos entrenados de cada categoría.
+
+\subsection{Resultados para clasificador L1}
+
+
+
+\section{Simulación en ambiente de desarrollo}
+
+

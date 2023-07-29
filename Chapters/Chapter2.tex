@@ -50,7 +50,7 @@ En esta sección se introducen las herramientas utilizadas para realizar la limp
 
 \subsection{Natural Language Toolkit}
 
-NLTK \textit{(Natural Language Toolkit)} es una librería de Python para preprocesar texto. Es una de las herramientas principales del mercado y entre otras cosas nos permite:
+NLTK \textit{(Natural Language Toolkit)} es una librería de Python para preprocesar texto. Es una de las herramientas principales del mercado y entre otras cosas permite:
 \begin{itemize}
 \item Realizar la ``tokenización'' o segmentación del texto.
 \item Remover \textit{stopwords} o palabras vacías.
@@ -69,9 +69,9 @@ Esta etapa es importante porque sirve como base para las etapas posteriores del 
 
 \subsubsection{Remoción de palabras vacías}
 
-Las \textit{stopwords} o palabras vacías son palabras que son muy comunes en nuestro idioma y están destinadas a aparecer en todas las oraciones, sin importar el tema al que hagan referencia \citep{WEBSITE:16}, por ejemplo: ``en'', ``este'', ``el'', ``las''.
+Las \textit{stopwords} o palabras vacías son palabras que son muy comunes en el idioma español y están destinadas a aparecer en todas las oraciones, sin importar el tema al que hagan referencia \citep{WEBSITE:16}, por ejemplo: ``en'', ``este'', ``el'', ``las''.
 
-Eliminar palabras comunes nos permite eliminar palabras con poco valor discriminativo entre textos (o categorías de reclamos). Además reduce el volumen de datos a procesar.
+Eliminar palabras comunes permite eliminar palabras con poco valor discriminativo entre textos (o categorías de reclamos). Además reduce el volumen de datos a procesar.
 
 \subsubsection{Derivación}
 
@@ -89,9 +89,9 @@ A continuación se dará una explicación de los módulos usados de esta librer�
 
 La normalización de etiquetas o \textit{label encoding} consiste en codificar variables categóricas en valores numéricos que irán entre 0 y $n-1$ siendo $n$ la cantidad de categorías. Es decir, asigna un número único a cada categoría. De esta forma, al entrenar los modelos de IA se puede pasar la variable \textit{target} en formato numérico. 
 
-Otra utilidad muy importante de la versión que trae Scikit-Learn es la posibilidad de realzar la transformación inversa. Esto resulta muy útil para determinar el texto de la variable numérica que predice el modelo.
+Otra utilidad muy importante de la versión que trae Scikit-Learn es la posibilidad de realizar la transformación inversa. Esto resulta muy útil para determinar el texto de la variable numérica que predice el modelo.
 
-En la figura \ref{fig:labelencoding} podemos ver un ejemplo de la transformación.
+En la figura \ref{fig:labelencoding} se puede ver un ejemplo de la transformación.
 
 \begin{figure}[htbp]
 	\centering
@@ -117,7 +117,7 @@ tf_{i,j}= \frac{n_{i,j}}{\sum_{_{k}}^{}n_{i,j}}
 \end{equation}
 
 IDF calcula la proporción de documentos del \textit{dataset} que poseen el \textit{token}. Es decir, divide la cantidad total de documentos sobre la cantidad de documentos con ese \textit{token}, y luego a ese resultado le aplica el logaritmo. Los términos raros tendrán un puntaje más alto. 
-La siguiente ecuación muestra como se calcula:
+La siguiente ecuación muestra cómo se calcula:
 \begin{equation}
 idf(w) = log(\frac{N}{df_{i}})
 \end{equation}
@@ -138,7 +138,7 @@ Para este trabajo se seleccionó particularmente el modelo CNB (\textit{Compleme
 
 Lo que hace el algoritmo es calcular, para cada clase, la probabilidad de que un documento no le pertenezca. Luego, la clase del documento será la clase con menor probabilidad, ya que aquí se quiere minimizar la probabilidad de no pertenecer.
 
-La fórmula de CNB es la siguiente \citep{WEBSITE:19}
+La fórmula de CNB es la siguiente \citep{WEBSITE:19}:
 \begin{equation}
 l(t) = \arg \min \sum_{i}^{}t_{i}w_{ci}
 \end{equation}
@@ -168,9 +168,9 @@ La innovación introducida por BERT es aplicar dos técnicas en la etapa de entr
 
 MLM consiste en dar a BERT una secuencia para que optimice sus pesos internos y produzca la misma secuencia. Sin embargo, previamente a dar a BERT la secuencia, se enmascaran ciertos \textit{tokens} para que BERT los tenga que ``adivinar''. La implicancia de esta técnica es que BERT termina aprendiendo del contexto de la oración para predecirlos.
 
-Para lograr esto, BERT se apoya en un mecanismo de atención propia o \textit{self-attention} posibilitado por los \textit{Transformers} bidireccionales en el núcleo del diseño de BERT. Esto es importante ya que el significado de una palabra puede cambiar su significado a medida que se desarrolla una oración. Cuantas más palabras haya en cada oración o frase, mas ambigua se  vuelve la palabra en cuestión. BERT se encarga de esta ambigüedad leyendo una oración bidireccionalmente, teniendo en cuenta el efecto de todas las palabras en la oración y no sólo las que la preceden \citep{WEBSITE:21}.
+Para lograr esto, BERT se apoya en un mecanismo de atención propia o \textit{self-attention} posibilitado por los \textit{Transformers} bidireccionales en el núcleo del diseño de BERT. Esto es importante ya que el significado de una palabra puede cambiar a medida que se desarrolla una oración. Cuantas más palabras haya en cada oración o frase, más ambigua se  vuelve la palabra en cuestión. BERT se encarga de esta ambigüedad leyendo una oración bidireccionalmente, teniendo en cuenta el efecto de todas las palabras en la oración y no sólo las que la preceden \citep{WEBSITE:21}.
 
-En la figura \ref{fig:selfattention} se puede ver como para una palabra, el modelo de IA se hace una ponderación de la importancia del resto de las palabras en esa oración.
+En la figura \ref{fig:selfattention} se puede ver cómo para una palabra, el modelo de IA hace una ponderación de la importancia del resto de las palabras en esa oración.
 
 \begin{figure}[htbp]
 	\centering
@@ -187,8 +187,8 @@ Para saber distinguir cuándo comienza la primer oración y cuándo la segunda, 
 
 \begin{enumerate}
 	\item Un \textit{token} ``[CLS]'' se inserta al comienzo de la primer oración y un \textit{token} ``[SEP]'' es insertado al final de las dos oraciones.
-	\item Se agrega un \textit{embedding} indicando para cada \textit{token} si corresponde con la oración A o B.
-	\item Se agrega un \textit{embedding} posicional indicando para cada \textit{token} su posición en la secuencia.
+	\item Se agrega un \textit{embedding} que indica para cada \textit{token} si corresponde con la oración A o B.
+	\item Se agrega un \textit{embedding} posicional que indica para cada \textit{token} su posición en la secuencia.
 \end{enumerate}
 
 En la figura \ref{fig:bertinput} se puede ver cómo se combinan estas dos técnicas cuando se entrena BERT.
@@ -202,7 +202,7 @@ En la figura \ref{fig:bertinput} se puede ver cómo se combinan estas dos técni
 
 \footnotetext{Imagen tomada de \url{https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270}}
 
-En la primera fila se observa como fueron separadas las dos oraciones. Luego en el \textit{embedding} amarillo, se observa como algunos \textit{tokens} son enmascarados para que luego la red los tenga que predecir. En el tercera, en verde, se observa la asignación de cada \textit{token} a la oración A o B y por último, se observa un \textit{embedding} con el orden de cada \textit{token}.
+En la primera fila se observa cómo fueron separadas las dos oraciones. Luego en el \textit{embedding} amarillo, se observa cómo algunos \textit{tokens} son enmascarados para que luego la red los tenga que predecir. En el tercera, en verde, se observa la asignación de cada \textit{token} a la oración A o B y por último, se observa un \textit{embedding} con el orden de cada \textit{token}.
 
 \section{Herramientas de software utilizadas}
 
@@ -210,35 +210,37 @@ En esta sección se presentan las herramientas que se utilizaron tanto para la f
 
 \subsection{Python}
 
-Python es un lenguaje de programación utilizado principalmente para desarrollo de aplicaciones y \textit{machine learning}. Entre sus características se destaca que es orientado a objetos, multiplataforma e interpretado y su tipado es dinámico y fuerte.
+Python es un lenguaje de programación utilizado principalmente para desarrollo de aplicaciones y \textit{machine learning}. Entre sus características se destaca que es orientado a objetos, multiplataforma e interpretado y su tipado es dinámico y fuerte \citep{WEBSITE:32}.
 
 \subsection{GitHub}
 
-GitHub es un servicio web donde los usuarios pueden alojar repositorios con Git como sistema de control de versiones. Este sistema permite gestionar y rastrear cambios en el código a través del tiempo, ayudando a los equipos de desarrolladores a trabajar en proyectos de manera colaborativa.
+GitHub es un servicio web donde los usuarios pueden alojar repositorios con Git como sistema de control de versiones. Este sistema permite gestionar y rastrear cambios en el código a través del tiempo, ayudando a los equipos de desarrolladores a trabajar en proyectos de manera colaborativa \citep{WEBSITE:33}.
+
+Por otro lado, tiene una plataforma de integración y despliegue continúo llamada GitHub Actions. Esta plataforma permite crear y configurar la ejecución de flujos de trabajo o \textit{workflows} cuando un evento sucede en el repositorio \citep{WEBSITE:37}.
 
 \subsection{BigQuery}
 \label{cap2-bq}
 
-BigQuery es un servicio \textit{serverless} de \textit{Data Warehouse} de GCP (Google Cloud Platform). Los datos se guardan en colecciones de tablas, que a su vez, se agrupan en \textit{datasets}. Cada columna de las tablas se almacena por separado, por eso se dice que BigQuery es una base de datos columnar.
+BigQuery es un servicio \textit{serverless} de \textit{Data Warehouse} de GCP (Google Cloud Platform). Los datos se guardan en colecciones de tablas, que a su vez, se agrupan en \textit{datasets}. Cada columna de las tablas se almacena por separado, por eso se dice que BigQuery es una base de datos columnar \citep{WEBSITE:30}.
 
-El acceso a los datos se hace a través del lenguaje SQL. Los recursos que se necesiten para ejecutar una consulta se calcula dinámicamente en base a las características de la misma y también en cómo esté configurada la tabla.
+El acceso a los datos se hace a través del lenguaje SQL. Los recursos que se necesiten para ejecutar una consulta se calculan dinámicamente en base a sus características y también en cómo esté configurada la tabla.
 
 \subsection{Vertex AI workbench}
 
-Vertex es un entorno de desarrollo especializado para ciencia de datos. Permite disponibilizar un \textit{Jupyter notebook} que se integra con BigQuery y Google Cloud Storage para la lectura de datos y con GitHub para la sincronización de código. Además posee instancias con distintas configuraciones de CPU y GPU. 
+Vertex es un entorno de desarrollo especializado para ciencia de datos. Permite disponibilizar un \textit{Jupyter notebook} que se integra con BigQuery y Google Cloud Storage para la lectura de datos y con GitHub para la sincronización de código. Además posee instancias con distintas configuraciones de CPU y GPU \citep{WEBSITE:34}. 
 
 \subsection{Docker}
 
-Docker es una herramienta que empaqueta \textit{software} en unidades llamadas contenedores, que incluyen todas las dependencias para que el programa se ejecute: ejecutables, archivos de configuración, librerías, bibliotecas, etc. Funciona de manera similar a una máquina virtual, solo que además de virtualizar el \textit{hardware} también virtualiza el sistema operativo.
+Docker es una herramienta que empaqueta \textit{software} en unidades llamadas contenedores, que incluyen todas las dependencias para que el programa se ejecute: ejecutables, archivos de configuración, bibliotecas, etc. Funciona de manera similar a una máquina virtual, solo que además de virtualizar el hardware también virtualiza el sistema operativo \citep{WEBSITE:35}.
 
 La principal ventaja que otorga el uso de Docker es que asegura que el contenedor se pueda ejecutar de manera fiable en cualquier plataforma compatible, como Kubernetes.
 
 \subsection{Artifact registry}
 
-Artifact Registry permite almacenar y administrar imágenes de Docker. Posibilita armar un \textit{pipeline} de integración y despliegue continuo al permitir cargar una imagen de Docker para que pueda ser consumida desde las distintas plataformas de orquestación de contenedores.
+Artifact Registry permite almacenar y administrar imágenes de Docker. Posibilita armar un \textit{pipeline} de integración y despliegue continuo al permitir cargar una imagen de Docker para que pueda ser consumida desde las distintas plataformas de orquestación de contenedores \citep{WEBSITE:36}.
 
 \subsection{Cloud Composer y Apache Airflow}
 
-Cloud Composer es un servicio de organización de flujos de trabajo administrado por Google. Está basado en el proyecto \textit{open source} Apache Airflow. 
+Cloud Composer es un servicio de organización de flujos de trabajo administrado por Google. Está basado en el proyecto \textit{open source} Apache Airflow \citep{WEBSITE:31}. 
 
 Un flujo de trabajo representa una serie de tareas para trabajar con datos. Estos flujos son creados mediante grafos acíclicos dirigidos o DAGs \textit{(Directed Acyclic Graphs)}. Los DAGs se crean con código en Python que especifica su estructura.
