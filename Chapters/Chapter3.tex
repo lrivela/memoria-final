@@ -31,9 +31,9 @@ Por otro lado, se trabajó en otro repositorio separado, que es único para mane
 
 El repositorio de Airflow cuenta con un Workflow de GitHub Action que sincroniza el código de los DAGs contra un Cloud Storage que está conectado a la instancia del orquestador. Airflow periódicamente controla si hay un flujo de trabajo nuevo y cuando lo detecta, lo carga.
 
-Al momento de ejecutar el proceso, Airflow utiliza un operador dentro del DAG para conectarse con la plataforma de Kubernetes en instancia un Pod. Este Pod ejecuta los archivos de código del contenedor que se empaquetaron en la imagen de Docker cargada previamente en el Artifact Registry.
+Al momento de ejecutar el proceso, Airflow utiliza un operador dentro del DAG para conectarse con la plataforma de Kubernetes e instanciar un Pod. Este Pod ejecuta los archivos de código del contenedor que se empaquetaron en la imagen de Docker cargada previamente en el Artifact Registry.
 
-Al finalizar, se guardan los resultados de las predicciones en una tabla en BigQuery y el Pod es eliminado de Kubernetes. Los datos quedan disponibles en la base para que cualquier usuario con los suficientes permisos pueda consumirlos ejecutando una consulta a la base.
+Al finalizar, se guardan los resultados de las predicciones en una tabla en BigQuery y el Pod es eliminado de Kubernetes. Los datos quedan disponibles en la base para que cualquier usuario con los suficientes permisos pueda consumirlos ejecutando una consulta.
 
 \section{Extracción y preprocesamiento del texto}
 
@@ -57,7 +57,7 @@ Las columnas de interés de esa tabla fueron:
 
 Para la fase de entrenamiento, se limitó la extracción de casos a los que tenían fecha de creación entre enero de 2021 y diciembre de 2022. Además, su estado debía ser ``Resuelto'' o ``Cerrado''. Sin embargo, por la poca cantidad de datos que había para algunos clasificadores L2, fue necesario realizar consultas adicionales para tomar casos de 2023. Una vez obtenidos los datos, se guardaron en archivos ``Parquet'' para su posterior uso con la librería Pandas para Python.
 
-Por otro lado, el área de atención al cliente maneja un archivo CSV \textit{(comma-separated values)} con la jerarquía de casos L1, L2 y L3. Es decir, para cada L1, qué casos L2 le corresponden, y para cada uno de esos L2, qué casos L3 le corresponden. Las categorías L3 fueron ignoradas para este trabajo, por lo que se hará foco en las primeras dos.
+Por otro lado, el área de atención al cliente maneja un archivo CSV \textit{(comma-separated values)} con la jerarquía de casos L1, L2 y L3. Es decir, para cada L1, qué casos L2 le corresponden, y para cada uno de esos L2, qué casos L3 le corresponden. Las categorías L3 fueron ignoradas para este trabajo, por lo que se hizo foco en las primeras dos.
 
 En total, se encontraron 15 categorías L1 y 122 categorías L2. Luego de una reunión con el área de atención al cliente para un mejor entendimiento de cada una, se descartó una categoría especial. Luego de este refinamiento quedaron 14 L1 y 117 L2.
 
@@ -70,7 +70,7 @@ En la figura \ref{fig:catl2porl1} se puede observar para cada categoría L1 cuá
 	\label{fig:catl2porl1}
 \end{figure}
 
-Para trabajar en la fase de preprocesamiento, se combinó el archivo de los casos con el archivo que contenía la jerarquía de categorías, obteniendo así la L1 de cada reclamo y consulta.
+Para trabajar en la fase de preprocesamiento, se combinó el archivo de los casos con el archivo que contenía la jerarquía de categorías, y se obtuvo la L1 de cada reclamo y consulta.
 
 \subsection{\textit{Pipeline} de preprocesamiento}
 
@@ -95,7 +95,7 @@ El proceso comienza con el texto original del reclamo tal cual quedó guardado e
 	\item Se eliminan espacios múltiples para normalizar en un espacio entre dos palabras.
 	\item Se remueven frases que se repiten en muchos reclamos: algunos casos quedan registrados en la base con la respuesta por parte de la empresa. Estos mensajes tienen una plantilla de base con frases que luego se repiten entre casos.
 	\item Se unen palabras con un significado específico: por ejemplo ``pedidos ya'' se deja como ``pedidosya'' porque hace referencia a una empresa.
-	\item Para el caso de los modelos de CNB entrenados, se aplicó un paso extra para eliminar \textit{stopwords}.
+	\item Para el caso de los modelos de CNB entrenados, se aplica un paso extra para eliminar \textit{stopwords}.
 	\item Por último se realizó un análisis con los datos de entrenamiento para ver los errores gramaticales más comunes utilizando la librería PyEnchant para Python. De esto se obtuvo un listado con los errores más comunes y un mapeo a su versión correcta. En este paso se aplica la corrección sobre ese listado de palabras.
 \end{enumerate}
 
@@ -103,7 +103,7 @@ Una vez obtenido el texto limpio, se procede a pasarlo a un vector numérico par
 
 \subsubsection{Codificación para CNB}
 
-En la figura \ref{fig:pipeline-baseline} se explica el proceso para obtener los vectores numéricos para entrenar el modelo de CNB. Al texto limpio se le aplica un paso de segmentación para obtener los \textit{tokens} que luego serán vectorizados utilizando el método TF-IDF. Por otro lado, a la variable objetivo que también esta en formato de texto, se le aplica el proceso de \textit{label encoding} para obtener una variable numérica. 
+En la figura \ref{fig:pipeline-baseline} se explica el proceso para obtener los vectores numéricos para entrenar el modelo de CNB. Al texto limpio se le aplica un paso de segmentación para obtener los \textit{tokens} que luego serán vectorizados utilizando el método TF-IDF. Por otro lado, a la variable objetivo que también está en formato de texto, se le aplica el proceso de \textit{label encoding} para obtener una variable numérica. 
 
 \begin{figure}[htbp]
 	\centering
@@ -114,7 +114,7 @@ En la figura \ref{fig:pipeline-baseline} se explica el proceso para obtener los 
 
 \subsubsection{Codificación para BERT}
 
-En la figura \ref{fig:pipeline-bert} se puede ver el proceso para el caso de BERT. Se puede notar que es un poco mas largo que el de CNB.
+En la figura \ref{fig:pipeline-bert} se puede ver el proceso para el caso de BERT. Se puede notar que es un poco más largo que el de CNB.
 
 \begin{figure}[htbp]
 	\centering
@@ -123,7 +123,7 @@ En la figura \ref{fig:pipeline-bert} se puede ver el proceso para el caso de BER
 	\label{fig:pipeline-bert}
 \end{figure}
 
-El algoritmo de segmentación de BERT se llama \textit{WordPiece} y tiene la particularidad de que no sólo segmenta por palabras sino que también lo hace por subpalabras y por caracteres. Arranca segmentando por todos los caracteres del vocabulario con el que fue entrenado y luego los va uniendo en pares. 
+El algoritmo de segmentación de BERT se llama \textit{WordPiece} y tiene la particularidad de que no sólo segmenta por palabras sino que también lo hace por subpalabras y por caracteres. Comienza segmentando por todos los caracteres del vocabulario con el que fue entrenado y luego los va uniendo en pares. 
 
 Utiliza la siguiente fórmula para computar los puntajes de los pares de \textit{tokens} a unir:
 \begin{equation}
@@ -133,7 +133,7 @@ Luego une los pares con mayor puntaje y re-calcula para todos los \textit{tokens
 
 El vocabulario del modelo pre-entrenado de BERT que se utilizó está compuesto por 977 \textit{tokens} reservados del estilo ``[MASK]'' o ``[PAD]'' por ejemplo y luego por \textit{tokens} de caracteres individuales, subpalabras y palabras. \citep{WEBSITE:22}
 
-En la figura \ref{fig:segmentacion-bert} podemos ver un ejemplo de cómo es segmentada una oración.
+En la figura \ref{fig:segmentacion-bert} se puede ver un ejemplo de cómo es segmentada una oración.
 
 \begin{figure}[htbp]
 	\centering
@@ -152,7 +152,7 @@ Por otro lado, la codificación de la variable objetivo es igual que en CNB solo
 
 \section{Entrenamiento de los modelos}
 
-En esta sección se describe en detalle: los análisis exploratorios realizados sobre los datos, cómo fue concebida la solución de los modelos de IA, y las técnicas utilizadas para entrenar los modelos.
+En esta sección se describe en detalle los análisis exploratorios realizados sobre los datos, cómo fue concebida la solución de los modelos de IA y las técnicas utilizadas para entrenar los modelos.
 
 \subsection{Análisis exploratorio}
 
@@ -165,9 +165,9 @@ En la figura \ref{fig:cap3-distribucion} se observa la proporción de casos de c
 	\label{fig:cap3-distribucion}
 \end{figure}
 
-También se realizó un análisis de las longitudes de los textos. En promedio, la cantidad de palabras en los mensajes fue de 78 previo a aplicar preprocesamiento, 71 aplicando una parte (se dejan las \textit{stopwords}) y 44 cuando se aplicó el preprocesamiento completo.
+También se realizó un análisis de las longitudes de los textos. En promedio, la cantidad de palabras en los mensajes fue de 78 previo a aplicar preprocesamiento, 71 luego de aplicar una parte (se dejan las \textit{stopwords}) y 44 cuando se aplicó el preprocesamiento completo.
 
-En la figura \ref{fig:cap3-longitudes} podemos observar la longitud promedio para cada categoría. En cada barra se puede ver la longitud del texto sin preprocesamiento, con preprocesamiento dejando \textit{stopwords} y también removiéndolas. Hay dos categorías cuya longitud promedio es particularmente elevada.
+En la figura \ref{fig:cap3-longitudes} se puede observar la longitud promedio para cada categoría. En cada barra se puede ver la longitud del texto sin preprocesamiento, con preprocesamiento dejando \textit{stopwords} y también removiéndolas. Hay dos categorías cuya longitud promedio es particularmente elevada.
 
 \begin{figure}[htbp]
 	\centering
@@ -178,7 +178,7 @@ En la figura \ref{fig:cap3-longitudes} podemos observar la longitud promedio par
 
 \subsection{Integración de los modelos}
 
-A continuación se presenta la figura \ref{fig:cap3-redes} dónde se puede ver cómo fue concebida la arquitectura de la solución de los modelos de IA.
+A continuación se presenta la figura \ref{fig:cap3-redes} donde se puede ver cómo fue concebida la arquitectura de la solución de los modelos de IA.
 
 Se tiene un clasificador que en primera instancia hace la predicción de las categorías de primer nivel, y luego se tienen clasificadores para cada subcategoría de segundo nivel. Esto significa que en total se entrenaron 15 modelos: el general y 14 de subcategorías.
 
@@ -200,7 +200,7 @@ Un modelo base o \textit{baseline} es un modelo simple que actúa como referenci
 Las ventajas de utilizar un modelo base son las siguientes \citep{WEBSITE:23}:
 \begin{itemize}
 	\item Se entrenan rápidamente y sin recursos especializados.
-	\item Permite tener un mejor entendimiento en etapas tempranas.
+	\item Permiten tener un mejor entendimiento en etapas tempranas.
 	\item Sirven para encontrar errores y poner a prueba suposiciones.
 	\item Sirven para medir el progreso de los modelos más complejos.
 \end{itemize}
@@ -217,13 +217,13 @@ Hubo algunas categorías en particular que cuando se quiso entrenar el clasifica
 	\item L2\_N.
 \end{itemize}
 
-La primera contaba con un total de 200 casos y cuando se incluyeron los de 2023  se llegó a tener 267. Para este caso, lo que se hizo fue obtener una métrica en validación cruzada usando la clase RepeatedStratifiedKFold de Scikit-Learn con 5 \textit{folds} y 5 repeats. Luego se procedió a entrenar el modelo CNB final utilizando el set de datos completo.
+La primera contaba con un total de 200 casos y cuando se incluyeron los de 2023  se llegó a tener 267. Para este caso, lo que se hizo fue obtener una métrica en validación cruzada usando la clase RepeatedStratifiedKFold de Scikit-Learn con 5 \textit{folds} y 5 \textit{repeats}. Luego se procedió a entrenar el modelo CNB final utilizando el set de datos completo.
 
 La segunda contaba originalmente con sólo 2 casos y cuando se incluyeron los de 2023 se llegó a 8. Este resultó ser un caso muy extremo, donde se utilizó otra técnica de validación cruzada con la clase LeaveOneOut de Scikit-Learn. Lo que hace esta técnica es ir apartando un dato por \textit{fold} y entrenar con el resto. Una vez tomada la métrica, se entrenó el CNB final con todos los datos.
 
 \subsection{Entrenamiento de BERT}
 
-Como los textos del \textit{dataset} estaban escritos en español, se utilizó la red BETO. Este modelo es un modelo BERT entrenado con el dataset \textit{spanish unannotated corpora} que cuenta con casi tres millardos de palabras. Está disponible dentro de la librería Transformers de HuggingFace para Python, tanto en Pytorch como en Tensorflow. Para este trabajo se utilizó esta última.
+Como los textos del dataset estaban escritos en español, se utilizó la red BETO. Este modelo es un modelo BERT entrenado con el dataset \textit{spanish unannotated corpora} que cuenta con casi tres millardos de palabras. Está disponible dentro de la librería Transformers de HuggingFace para Python, tanto en Pytorch como en Tensorflow. Para este trabajo se utilizó esta última \citep{WEBSITE:38}.
 
 Por otro lado, estos modelos pre-entrenados deben ser adaptados para realizar tareas como clasificación de texto. En la figura \ref{fig:cap3-downstream} se muestra un esquema de entrenamiento de BETO.
 
@@ -278,7 +278,7 @@ Como se menciona en el capítulo \ref{Chapter2}, para entrenar a BETO se utiliz�
 	\item Los \textit{notebooks} administrados por el usuario: permiten una mayor personalización y son ideales cuando se necesita mayor control sobre el entorno.
 \end{itemize}
 
-La instancia utilizada fue la segunda: las administradas por el usuario. El \textit{hardware} con el que contaba era el siguiente:
+La instancia utilizada fue la segunda: las administradas por el usuario. El hardware con el que contaba se explica en la tabla \ref{tab:vertex}:
 \begin{table}[h]
 	\centering
 	\caption[Especificaciones técnicas Vertex]{Especificaciones técnicas del entorno de entrenamiento.}
@@ -301,15 +301,15 @@ La instancia utilizada fue la segunda: las administradas por el usuario. El \tex
 	\label{tab:vertex}
 \end{table}
 
-Por otro lado, se decidió utilizar el entorno TensorFlow Enterprise 2.11 como imagen virtual de la instancia, lo que permitió tener todos los \textit{drivers} de la placa de video pre-instalados y además contaba con el sistema de paquetes Conda con las librerías de TensorFlow para Python también pre-instaladas. Tener esa configuración cubierta por la nube de Google resultó en una gran ventaja porque evitó el tener que analizar la compatibilidad entre el \textit{hardware} y el \textit{software}.
+Por otro lado, se decidió utilizar el entorno TensorFlow Enterprise 2.11 como imagen virtual de la instancia, lo que permitió tener todos los \textit{drivers} de la placa de video pre-instalados y además contaba con el sistema de paquetes Conda con las librerías de TensorFlow para Python también pre-instaladas. Tener esa configuración cubierta por la nube de Google resultó en una gran ventaja porque evitó tener que analizar la compatibilidad entre el hardware y el software.
 
 \subsubsection{Puntos de control}
 
 Para evitar pérdida de información accidental en la etapa de entrenamiento se utilizó una clase de TensorFlow que se llama ModelCheckpoint.
 
-ModelCheckpoint es un \textit{callback} que, dependiendo de como se configure, puede ejecutarse al finalizar una época o cada cierta cantidad de lotes o \textit{batches}. Su función principal es guardar los pesos de la red y el estado del optimizador al almacenamiento permanente para no perder esa información en caso de que se apague la instancia o surja algún error. Se pueden configurar criterios de guardado como, por ejemplo, sólo si mejoró una métrica o la función de pérdida.
+ModelCheckpoint es un \textit{callback} que, dependiendo de cómo se configure, puede ejecutarse al finalizar una época o cada cierta cantidad de lotes o \textit{batches}. Su función principal es guardar los pesos de la red y el estado del optimizador en almacenamiento permanente para no perder esa información en caso de que se apague la instancia o surja algún error. Se pueden configurar criterios de guardado como, por ejemplo, sólo si mejoró una métrica o la función de pérdida.
 
-La configuración usada fue:
+La configuración usada se explica en la tabla \ref{tab:checkpoint}:
 \begin{table}[ht]
 	\centering
 	\caption[Configuración ModelCheckpoint]{Configuración del ModelCheckpoint.}
@@ -343,7 +343,7 @@ Esto se puede notar en la imagen \ref{fig:cap3-overfitting} donde la función de
 
 La clase de TensorFlow utilizada para esto fue EarlyStopping. También es un \textit{callback} pero este lo que hace es ir monitoreando una métrica que se pasa como parámetro y luego de un par de épocas en las que no mejora o empeora, detiene el entrenamiento.
 
-La configuración utilizada fue la siguiente:
+La configuración utilizada se puede ver en la tabla \ref{tab:earlystopping}:
 \begin{table}[h]
 	\centering
 	\caption[Configuración EarlyStopping]{Configuración de EarlyStopping.}
@@ -372,15 +372,15 @@ Una de esas variaciones fue dejar o remover las \textit{stopwords}. Esto se pued
 
 Otra variación que se intentó probar fue cambiar el largo de la secuencia. Los modelos de BERT admiten hasta un máximo de 512 \textit{tokens}. El desafío aquí es que a mayor largo de secuencia, habrá mayor consumo de memoria, y la placa de video utilizada estaba limitada en 16 GB. Otra consecuencia es que al consumir más memoria, obliga a reducir el \textit{batch size}.
 
-Para la primer parte del entrenamiento, donde las capas inferiores estaban bloqueadas se utilizó un largo de secuencia de 128 con el tamaño del \textit{batch} en 128 muestras.
+Para la primer parte del entrenamiento, donde las capas inferiores estaban bloqueadas, se utilizó un largo de secuencia de 128 con el tamaño del \textit{batch} en 128 muestras.
 
 Para la segunda parte del entrenamiento, donde se realizó un ajuste fino a todas las capas de la red, se utilizó también un largo de secuencia de 128 pero en este caso hubo que reducir el tamaño del \textit{batch} a 24 muestras.
 
-Cuando recién se estaban arrancando con los entrenamientos, se probó utilizar un largo de secuencia de 512 y con un \textit{batch} de 8, pero estas pruebas fueron desestimadas porque no había mejoras significativas en el desempeño y el entrenamiento demandaba mucho tiempo.
+Cuando recién se estaba comenzando con los entrenamientos, se probó utilizar un largo de secuencia de 512 y con un \textit{batch} de 8, pero estas pruebas fueron desestimadas porque no había mejoras significativas en el desempeño y el entrenamiento demandaba mucho tiempo.
 
 \subsubsection{Técnicas para el desbalance de clases}
 
-La distribución de categorías presentaban un desbalance por la naturaleza misma de los reclamos. Hay reclamos con mayor probabilidad de ocurrencia que otros, ya sea porque una funcionalidad se utiliza más, porque tiene mayor propensión a fallar o simplemente porque genera más consultas por parte de los usuarios.
+La distribución de categorías presentaba un desbalance por la naturaleza misma de los reclamos. Hay reclamos con mayor probabilidad de ocurrencia que otros, ya sea porque una funcionalidad se utiliza más, porque tiene mayor propensión a fallar o simplemente porque genera más consultas por parte de los usuarios.
 
 Entre los métodos disponibles para tratar el desbalance había \citep{ARTICLE:7} \citep{WEBSITE:25}:
 \begin{itemize}
@@ -389,10 +389,10 @@ Entre los métodos disponibles para tratar el desbalance había \citep{ARTICLE:7
 	\item Submuestreo aleatorio: consiste en eliminar casos de las clases mayoritarias de forma aleatoria.
 	\item \textit{Text augmentation}: consiste en realizar manipulaciones sobre los textos originales como, por ejemplo, reemplazar palabras por sus sinónimos de forma aleatoria, para generar nuevos casos de las clases minoritarias.
 	\item \textit{Hidden space augmentation}: consiste en generar nuevos vectores en el espacio de representación de BERT reemplazando partes pequeñas de un vector con otras de otro vector de la misma clase.
-	\item Pesos para las clases: consiste en modificar la función de pérdida de la red a través del uso de un vector con pesos ponderados para cada clase, dándole mayor importancia a las clases minoritarias.
+	\item Pesos para las clases: consiste en modificar la función de pérdida de la red por medio del uso de un vector con pesos ponderados para cada clase, dándole mayor importancia a las clases minoritarias.
 \end{itemize}
 
-La primera opción de reagrupar categorías fue descartada porque el área de atención al cliente tiene categorías de reclamo pre-definidas que no se pueden modificar.
+La primera opción, la de reagrupar categorías, fue descartada porque el área de atención al cliente tiene categorías de reclamo pre-definidas que no se pueden modificar.
 
 La opción de sobremuestreo podía generar sobreajuste por lo que fue descartada. Por otro lado, la opción de submuestreo también fue descartada porque implicaba pérdida de información importante para los reclamos que tienen mayor probabilidad de ocurrencia, y que en definitiva son los que suelen tratar más a menudo en el área.
 
@@ -412,7 +412,7 @@ Sin embargo, diversos artículos mencionan que utilizar el optimizador LAMB \tex
 
 El algoritmo está basado en Adam, por lo que es muy similar a este. La principal diferencia es que calcula una relación conocida como ``factor de confianza'' que sirve para normalizar los gradientes y evitar divergencias. Esta normalización es doble: (i) normaliza por dimensión con respecto a la raíz cuadrada del segundo momento utilizado en Adam y (ii) normaliza por capas.
 
-En la figura \ref{fig:cap3-lamb} se puede observar los valores de la función de pérdida y el nivel exactitud en pruebas para Adam (en azul) y LAMB (en rojo) a través del tiempo en el conjunto de datos MNIST.
+En la figura \ref{fig:cap3-lamb} se pueden observar los valores de la función de pérdida y el nivel exactitud en pruebas para Adam (en azul) y LAMB (en rojo) a través del tiempo en el conjunto de datos MNIST.
 
 \begin{figure}[htbp]
 	\centering
@@ -455,7 +455,7 @@ En la figura \ref{fig:cap3-gh-docker} puede verse el menú de GitHub desde donde
 	\label{fig:cap3-gh-docker}
 \end{figure}
 
-El Dockerfile es un archivo que incluye instrucciones para crear una imagen de Docker. En la figura \ref{fig:cap3-docker-dockerfile} puede verse en detalle.
+El Dockerfile es un archivo que incluye instrucciones para crear una imagen de Docker. En la figura \ref{fig:cap3-docker-dockerfile} puede verse su estructura en detalle.
 
 \begin{figure}[htbp]
 	\centering
@@ -488,9 +488,9 @@ En la figura \ref{fig:cap3-pipeline} puede verse cómo es el flujo para cargar u
 	\label{fig:cap3-pipeline}
 \end{figure}
 
-El proceso arranca generando un DAG en el repositorio dedicado para Airflow, que tiene un GitHub Workflow que sincroniza el archivo contra un contenedor de Cloud Storage llamado \textit{bucket}. 
+El proceso comienza generando un DAG en el repositorio dedicado para Airflow, que tiene un GitHub Workflow que sincroniza el archivo contra un contenedor de Cloud Storage llamado \textit{bucket}. 
 
-El Cloud Composer está continuamente monitoreando si se cargaron nuevos archivos al \textit{bucket} que tiene configurado, y cuando así sucede, los carga en la base de Airflow. Luego lo procede a mostrar en su portal \textit{web}.
+El Cloud Composer está continuamente monitoreando si se cargaron nuevos archivos al \textit{bucket} que tiene configurado, y cuando así sucede, los carga en la base de Airflow. Luego procede a mostrarlo en su portal \textit{web}.
 
 Un DAG puede ser programado para ejecutarse a intervalos regulares de tiempo o también puede ser ejecutado manualmente. Cuando se ejecuta, se comienzan a ejecutar distintos operadores en su flujo de trabajo. En la figura \ref{fig:cap3-dag} puede verse la estructura del DAG desarrollado.
 
@@ -501,7 +501,7 @@ Un DAG puede ser programado para ejecutarse a intervalos regulares de tiempo o t
 	\label{fig:cap3-dag}
 \end{figure}
 
-Todos los operadores que componen este DAG son del tipo GKEStartPodOperator. Este operador hace que Airflow se conecte con el motor de Kubernetes Engine que se pase como parámetro e instancia un Pod. Las configuraciones más importantes que se utilizaron fueron:
+Todos los operadores que componen este DAG son del tipo GKEStartPodOperator. Este operador hace que Airflow se conecte con el motor de Kubernetes Engine que se pase como parámetro e instancie un Pod. Las configuraciones más importantes que se utilizaron fueron:
 \begin{itemize}
 	\item El nombre del \textit{cluster} de GKE donde se va a instanciar el Pod.
 	\item La localización del \textit{cluster} de GKE.
@@ -511,7 +511,7 @@ Todos los operadores que componen este DAG son del tipo GKEStartPodOperator. Est
 	\item El nodo de Kubernetes donde asignar la ejecución del Pod para asegurar que tenga placa de video.
 \end{itemize}
 
-Al final del DAG se define el ruteo entre los operadores para definir como se conectan y cómo son las reglas de ejecución. Para este trabajo, como todo se encuentra en un ambiente de desarrollo, la ejecución de los operadores es secuencial (va de a uno por vez).
+Al final del DAG se define el ruteo entre los operadores para definir cómo se conectan y cómo son las reglas de ejecución. Para este trabajo, como todo se encuentra en un ambiente de desarrollo, la ejecución de los operadores es secuencial (va de a uno por vez).
 
 Los estados por los que pasa un Pod pueden verse en la figura \ref{fig:cap3-pod-lc}.
 
@@ -534,7 +534,7 @@ A continuación se explica cada uno de ellos \citep{WEBSITE:27}:
 
 \subsection{Parametrización de los contenedores}
 
-Para que el contenedor sepa para que categoría debe hacer la predicción, se especifican unas variables de entorno en el GKEStartPodOperator que luego se pasan al contenedor en el momento de su creación. Así, en tiempo de ejecución, el contenedor sabe para qué categoría está clasificando y ajustar su comportamiento en base a eso.
+En el momento de su creación, el contenedor recibe por medio del GKEStartPodOperator unas variables de entorno que le permiten saber para qué categoría está clasificando y ajustar su comportamiento en base a eso.
 
 En la figura \ref{fig:cap3-prediccion} se puede ver en detalle este comportamiento:
 
@@ -545,7 +545,7 @@ En la figura \ref{fig:cap3-prediccion} se puede ver en detalle este comportamien
 	\label{fig:cap3-prediccion}
 \end{figure}
 
-El contenedor recibe qué archivo de Python debe ejecutar: 
+El contenedor recibe el nombre del archivo de Python que debe ejecutar: 
 \begin{itemize}
 	\item El de clasificación L1.
 	\item El de clasificación L2 con BERT.
@@ -553,6 +553,9 @@ El contenedor recibe qué archivo de Python debe ejecutar:
 	\item El de unificación de las tablas temporales y generación de la tabla de predicción.
 \end{itemize}
 
-También recibe el nombre de la tabla donde almacenar la predicción y si es el \textit{dataset} temporal o es el definitivo en el paso de unificación. Por otro lado también recibe la tabla con las predicciones temporales de L1 para los pasos de clasificación de L2.
-
-Por último, otros parámetros que recibe son el nombre del modelo y el codificador para descargarlos desde el almacenamiento.
+También recibe:
+\begin{itemize}
+	\item El nombre de la tabla donde almacenar la predicción y si es el dataset temporal o es el definitivo (para el paso de unificación).
+	\item La tabla con las predicciones temporales de L1 (para los pasos de clasificación L2).
+	\item El nombre del modelo y el codificador para descargarlos desde el almacenamiento (para los pasos de predicción).
+\end{itemize}
