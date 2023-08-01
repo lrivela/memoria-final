@@ -17,21 +17,21 @@ En la figura \ref{fig:arqsistema} se puede observar la arquitectura de alto nive
 	\label{fig:arqsistema}
 \end{figure}
 
-La mayor parte del desarrollo se realizó en una computadora local, que contaba con un intérprete de Python y Visual Studio Code con Jupyter para la escritura de código. Estos archivos se sincronizaban contra un repositorio de GitHub.
+Como se puede ver en el cuadro inferior izquierdo, la mayor parte del desarrollo se realizó en una computadora local, que contaba con un intérprete de Python y Visual Studio Code con Jupyter para la escritura de código. Estos archivos se sincronizaban contra un repositorio de GitHub.
 
-Los datos para realizar el entrenamiento de los modelos de IA fueron tomados del \textit{data warehouse} BigQuery utilizando consultas SQL y bibliotecas de Google para Python para manejar su ejecución.
+Los datos para realizar el entrenamiento de los modelos de IA fueron tomados del \textit{data warehouse} BigQuery utilizando consultas SQL y bibliotecas de Google para Python para manejar su ejecución, como se puede ver en la flecha de la parte inferior que conecta BigQuery con el entorno de desarrollo.
 
 Estos datos son llevados a BigQuery por un proceso ajeno a este desarrollo, que se encarga de sincronizar la base de Salesforce hacia el \textit{data warehouse} diariamente. Particularmente, hay una tabla que contiene los reclamos y consultas de los usuarios, con su identificador de caso, fecha de creación y estado.
 
-En las ocasiones en las que fue necesario un mayor poder de cómputo a través del uso de una placa de vídeo dedicada, se utilizó una instancia de Vertex AI Workbench en la nube de Google. Por lo general, estas situaciones se dieron al momento de realizar distintas pruebas con las redes neuronales BERT. Los modelos eran luego exportados al almacenamiento de la nube llamado Cloud Storage en formato ``Pickle'' o ``HDF5'' \textit{(Hierarchical Data Format 5)}.
+En las ocasiones en las que fue necesario un mayor poder de cómputo a través del uso de una placa de vídeo dedicada, se utilizó una instancia de Vertex AI Workbench en la nube de Google. Por lo general, estas situaciones se dieron al momento de realizar distintas pruebas con las redes neuronales BERT. Los modelos eran luego exportados al almacenamiento de la nube llamado Cloud Storage en formato ``Pickle'' o ``HDF5'' \textit{(Hierarchical Data Format 5)}. Esto se puede notar por la flecha que conecta la figura de Cloud Storage con la de Vertex Workbench.
 
-El repositorio del proyecto cuenta con un Workflow de GitHub Action que se corre manualmente y genera una imagen de Docker, incluyendo bibliotecas y librerías necesarias, archivos de código y de configuración. Esta imagen de Docker es enviada al Artifact Registry de la nube de Google y almacenada allí.
+En la parte superior izquierda se encuentras los repositorios creados en GitHub. El repositorio del proyecto cuenta con un Workflow de GitHub Action que se corre manualmente y genera una imagen de Docker, incluyendo bibliotecas y librerías necesarias, archivos de código y de configuración. Esta imagen de Docker es enviada al Artifact Registry de la nube de Google y almacenada allí.
 
-Por otro lado, se trabajó en otro repositorio separado, que es único para manejar todos los flujos de trabajo de Apache Airflow que tiene el área de \textit{machine learning}. Este repositorio es exclusivo para la etapa de despliegue, y se agregó el DAG que administra el proceso de predicción.
+Asimismo, se trabajó en otro repositorio que está destinado exclusivamente a la administración de los flujos de trabajo de Apache Airflow que tiene el área de \textit{machine learning}. Las actividades realizadas incluyeron agregar un archivo de Python con el código del DAG para administrar la ejecución de la predicción.
 
 El repositorio de Airflow cuenta con un Workflow de GitHub Action que sincroniza el código de los DAGs contra un Cloud Storage que está conectado a la instancia del orquestador. Airflow periódicamente controla si hay un flujo de trabajo nuevo y cuando lo detecta, lo carga.
 
-Al momento de ejecutar el proceso, Airflow utiliza un operador dentro del DAG para conectarse con la plataforma de Kubernetes e instanciar un Pod. Este Pod ejecuta los archivos de código del contenedor que se empaquetaron en la imagen de Docker cargada previamente en el Artifact Registry.
+En la parte superior derecha del diagrama se puede ver como al momento de ejecutar el proceso, Airflow utiliza un operador dentro del DAG para conectarse con la plataforma de Kubernetes e instanciar un Pod. Este Pod ejecuta los archivos de código del contenedor que se empaquetaron en la imagen de Docker cargada previamente en el Artifact Registry.
 
 Al finalizar, se guardan los resultados de las predicciones en una tabla en BigQuery y el Pod es eliminado de Kubernetes. Los datos quedan disponibles en la base para que cualquier usuario con los suficientes permisos pueda consumirlos ejecutando una consulta.
 
@@ -137,7 +137,7 @@ En la figura \ref{fig:segmentacion-bert} se puede ver un ejemplo de cómo es seg
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=1\textwidth]{./Figures/cap3-segmentacion.png}
+	\includegraphics[width=1.05\textwidth]{./Figures/cap3-segmentacion.png}
 	\caption{Ejemplo de segmentación \textit{WordPiece}\protect\footnotemark.}
 	\label{fig:segmentacion-bert}
 \end{figure}
@@ -310,7 +310,7 @@ Para evitar pérdida de información accidental en la etapa de entrenamiento se 
 ModelCheckpoint es un \textit{callback} que, dependiendo de cómo se configure, puede ejecutarse al finalizar una época o cada cierta cantidad de lotes o \textit{batches}. Su función principal es guardar los pesos de la red y el estado del optimizador en almacenamiento permanente para no perder esa información en caso de que se apague la instancia o surja algún error. Se pueden configurar criterios de guardado como, por ejemplo, sólo si mejoró una métrica o la función de pérdida.
 
 La configuración usada se explica en la tabla \ref{tab:checkpoint}:
-\begin{table}[ht]
+\begin{table}[H]
 	\centering
 	\caption[Configuración ModelCheckpoint]{Configuración del ModelCheckpoint.}
 	\begin{tabular}{l c}    
@@ -344,7 +344,7 @@ Esto se puede notar en la imagen \ref{fig:cap3-overfitting} donde la función de
 La clase de TensorFlow utilizada para esto fue EarlyStopping. También es un \textit{callback} pero este lo que hace es ir monitoreando una métrica que se pasa como parámetro y luego de un par de épocas en las que no mejora o empeora, detiene el entrenamiento.
 
 La configuración utilizada se puede ver en la tabla \ref{tab:earlystopping}:
-\begin{table}[h]
+\begin{table}[H]
 	\centering
 	\caption[Configuración EarlyStopping]{Configuración de EarlyStopping.}
 	\begin{tabular}{l c}    
