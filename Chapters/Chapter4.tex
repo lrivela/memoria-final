@@ -95,10 +95,7 @@ En la figura \ref{fig:res-l2a} se pueden observar los distintos entrenamientos r
 	\label{fig:res-l2a}
 \end{figure}
 
-Se detallan algunas aclaraciones:
-\begin{itemize}
-	\item El modelo BETO\_4 cuenta con un \textit{head} de clasificación de dos capas.
-\end{itemize}
+Aclaración: el modelo BETO\_4 cuenta con un \textit{head} de clasificación de dos capas.
 
 \subsection{Resultados para clasificador L2 B}
 
@@ -122,14 +119,11 @@ En la figura \ref{fig:res-l2c} se presentan los resultados para los entrenamient
 	\label{fig:res-l2c}
 \end{figure}
 
-Se detallan algunas aclaraciones:
-\begin{itemize}
-	\item Los modelos entrenados con LAMB cuentan con un \textit{head} de clasificación de dos capas.
-\end{itemize}
+Aclaración: los modelos entrenados con LAMB cuentan con un \textit{head} de clasificación de dos capas.
 
 \subsection{Resultados para clasificador L2 D}
 
-A continuación se muestra la figura \ref{fig:res-l2d} con los resultados para los entrenamientos del clasificador L2 D:
+A continuación se muestra la figura \ref{fig:res-l2d} con los resultados para los entrenamientos del clasificador L2 D.
 
 \begin{figure}[htbp]
 	\centering
@@ -138,10 +132,91 @@ A continuación se muestra la figura \ref{fig:res-l2d} con los resultados para l
 	\label{fig:res-l2d}
 \end{figure}
 
-Se detallan algunas aclaraciones:
+Aclaración: los modelos entrenados con LAMB cuentan con un \textit{head} de clasificación de dos capas.
+
+\subsection{Resultados para clasificador L2 E}
+
+En la figura \ref{fig:res-l2e} se pueden observar los distintos entrenamientos realizados para el clasificador L2 E y su puntaje obtenido:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2e.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 E.}
+	\label{fig:res-l2e}
+\end{figure}
+
+A continuación se hacen algunas aclaraciones:
 \begin{itemize}
-	\item Los modelos entrenados con LAMB cuentan con un \textit{head} de clasificación de dos capas.
+	\item Los modelos CNB\_1 y BETO\_1 fueron entrenados únicamente con el dataset que tenía datos hasta 2022. Algunas categorías no tenían datos hasta esa fecha, por lo que los modelos fueron entrenados con datos faltantes para esas categorías.
+	\item Los modelos BETO\_2 y BETO\_3 fueron entrenados con el dataset que tenía datos hasta 2022 pero incluyendo datos de 2023 para las categorías que no tenían datos.
 \end{itemize}
+
+\subsection{Resultados para clasificador L2 F}
+
+En la figura \ref{fig:res-l2f} se muestran los entrenamientos realizados para el clasificador L2 F y sus resultados:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2f.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 F.}
+	\label{fig:res-l2f}
+\end{figure}
+
+\subsection{Resultados para clasificador L2 G}
+
+En la figura \ref{fig:res-l2g} se presentan los resultados para los entrenamientos del clasificador L2 G:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2g.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 G.}
+	\label{fig:res-l2g}
+\end{figure}
+
+Aclaración: los modelos BETO\_3 y BETO\_4 fueron entrenados con un \textit{head} de clasificación de dos capas.
+
+\subsection{Resultados para clasificador L2 H}
+
+A continuación se muestra la figura \ref{fig:res-l2h} con los resultados para los entrenamientos del clasificador L2 H.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2h.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 H.}
+	\label{fig:res-l2h}
+\end{figure}
+
+Aclaración: el modelo BETO\_4 fue entrenado con un \textit{head} de clasificación de dos capas.
+
+\subsection{Resultados para clasificador L2 I}
+
+En la figura \ref{fig:res-l2i} se presentan los resultados para los entrenamientos del clasificador L2 I.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2i.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 I.}
+	\label{fig:res-l2i}
+\end{figure}
+
+Se hacen algunas aclaraciones:
+\begin{itemize}
+	\item Tanto en el dataset que tenía datos hasta 2022 como el que incluía datos de 2023 carecían de datos para algunas categorías.
+	\item Todos los modelos entrenados con LAMB contaban con un \textit{head} de clasificación de dos capas.
+	\item El modelo BETO\_1 fue entrenado exclusivamente con el dataset original.
+	\item El modelo BETO\_2 fue entrenado con el dataset original y se incluyeron datos de 2023 para las categorías sin datos.
+	\item Los modelos BETO\_3 y BETO\_4 fueron entrenados con datos hasta 2023 inclusive para todas las categorías.
+\end{itemize}
+
+\subsection{Resultados para clasificador L2 J}
+
+\subsection{Resultados para clasificador L2 K}
+
+\subsection{Resultados para clasificador L2 L}
+
+\subsection{Resultados para clasificador L2 M}
+
+\subsection{Resultados para clasificador L2 N}
 
 \section{Simulación en ambiente de desarrollo}
 
