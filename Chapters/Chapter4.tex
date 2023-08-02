@@ -66,7 +66,82 @@ En esta sección se presentan los resultados obtenidos para todos los modelos en
 
 \subsection{Resultados para clasificador L1}
 
+En la figura \ref{fig:res-l1} se pueden observar los distintos entrenamientos realizados para el clasificador L1 y su puntaje obtenido:
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l1.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L1.}
+	\label{fig:res-l1}
+\end{figure}
+
+A continuación se hacen algunas aclaraciones respecto de los modelos:
+\begin{itemize}
+	\item Modelo CNB\_1: los reclamos pertenecientes a la categoría especial que se menciona en la subsección \ref{sec:extraccion} fueron eliminados.
+	\item Modelo CNB\_2: los reclamos pertenecientes a la categoría especial fueron redireccionados a otras categorías L1.
+	\item Modelo BETO\_1: los reclamos pertenecientes a la categoría especial fueron eliminados.
+	\item Modelo BETO\_2: los reclamos pertenecientes a la categoría especial fueron redireccionados a otras categorías L1.
+	\item Modelo BETO\_3: los reclamos pertenecientes a la categoría especial fueron eliminados.
+\end{itemize}
+
+\subsection{Resultados para clasificador L2 A}
+
+En la figura \ref{fig:res-l2a} se pueden observar los distintos entrenamientos realizados para el clasificador L2 A y su puntaje obtenido:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2a.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 A.}
+	\label{fig:res-l2a}
+\end{figure}
+
+Se detallan algunas aclaraciones:
+\begin{itemize}
+	\item El modelo BETO\_4 cuenta con un \textit{head} de clasificación de dos capas.
+\end{itemize}
+
+\subsection{Resultados para clasificador L2 B}
+
+En la figura \ref{fig:res-l2b} se muestran los entrenamientos realizados para el clasificador L2 B y sus resultados:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2b.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 B.}
+	\label{fig:res-l2b}
+\end{figure}
+
+\subsection{Resultados para clasificador L2 C}
+
+En la figura \ref{fig:res-l2c} se presentan los resultados para los entrenamientos del clasificador L2 C:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2c.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 C.}
+	\label{fig:res-l2c}
+\end{figure}
+
+Se detallan algunas aclaraciones:
+\begin{itemize}
+	\item Los modelos entrenados con LAMB cuentan con un \textit{head} de clasificación de dos capas.
+\end{itemize}
+
+\subsection{Resultados para clasificador L2 D}
+
+A continuación se muestra la figura \ref{fig:res-l2d} con los resultados para los entrenamientos del clasificador L2 D:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2d.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 D.}
+	\label{fig:res-l2d}
+\end{figure}
+
+Se detallan algunas aclaraciones:
+\begin{itemize}
+	\item Los modelos entrenados con LAMB cuentan con un \textit{head} de clasificación de dos capas.
+\end{itemize}
 
 \section{Simulación en ambiente de desarrollo}
 
