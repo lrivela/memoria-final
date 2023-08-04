@@ -88,7 +88,7 @@ A continuación se hacen algunas aclaraciones respecto de los modelos:
 
 En la figura \ref{fig:res-l2a} se pueden observar los distintos entrenamientos realizados para el clasificador L2 A y su puntaje obtenido:
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2a.png}
 	\caption{Resultados obtenidos para los modelos clasificadores L2 A.}
@@ -155,7 +155,7 @@ A continuación se hacen algunas aclaraciones:
 
 En la figura \ref{fig:res-l2f} se muestran los entrenamientos realizados para el clasificador L2 F y sus resultados:
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2f.png}
 	\caption{Resultados obtenidos para los modelos clasificadores L2 F.}
@@ -210,13 +210,52 @@ Se hacen algunas aclaraciones:
 
 \subsection{Resultados para clasificador L2 J}
 
+A continuación se muestra la figura \ref{fig:res-l2j} con los resultados para los entrenamientos del clasificador L2 J.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2j.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 J.}
+	\label{fig:res-l2j}
+\end{figure}
+
 \subsection{Resultados para clasificador L2 K}
+
+En la figura \ref{fig:res-l2k} se presentan los resultados para los entrenamientos del clasificador L2 K.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2k.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 K.}
+	\label{fig:res-l2k}
+\end{figure}
 
 \subsection{Resultados para clasificador L2 L}
 
+En la figura \ref{fig:res-l2l} se presentan los resultados para los entrenamientos del clasificador L2 L.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2l.png}
+	\caption{Resultados obtenidos para los modelos clasificadores L2 L.}
+	\label{fig:res-l2l}
+\end{figure}
+
+Se hacen algunas aclaraciones de los modelos:
+\begin{itemize}
+	\item Los modelos CNB\_1, BETO\_1 y BETO\_2 fueron entrenados con el dataset original que tenía datos hasta 2022 inclusive.
+	\item Los modelos CNB\_2, BETO\_3, BETO\_5 y BETO\_6 fueron entrenados con el dataset que también incluía datos de 2023.
+	\item Para el entrenamiento del modelo BETO\_4 se utilizó el dataset original que tenía datos hasta 2022 y además se incluyeron datos de 2023 para la clase minoritaria.
+	\item Para los modelos BETO\_5 y BETO\_6 se utilizó un \textit{head} de clasificación de dos capas.
+\end{itemize}
+
 \subsection{Resultados para clasificador L2 M}
 
+Como se mencionó en la sección \ref{sec:kfolds}, el entrenamiento del modelo L2 M fue particular porque se contaban con 267 muestras incluyendo los casos de 2023. Se decidió obtener una métrica con validación cruzada para tener una medida de desempeño y luego entrenar un modelo con todos los datos. En este caso el F1 obtenido fue 0,5568.
+
 \subsection{Resultados para clasificador L2 N}
+
+Además, en la sección \ref{sec:kfolds} también se hace mención al modelo L2 N, que fue un caso extremo donde sólo había 8 muestras incluyendo los datos de 2023. Aquí se utilizó la técnica de \textit{leave one out} y el F1 obtenido fue 0,7500.
 
 \section{Simulación en ambiente de desarrollo}
 
