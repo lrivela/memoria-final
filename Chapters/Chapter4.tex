@@ -259,4 +259,71 @@ Además, en la sección \ref{sec:kfolds} también se hace mención al modelo L2 
 
 \section{Simulación en ambiente de desarrollo}
 
+Las pruebas realizadas en la nube de Google incluyeron el despliegue de la solución en un ambiente de desarrollo con recursos similares a los de un ambiente de producción, pero con menor capacidad de cómputo.
+
+La infraestructura utilizada de Google fue:
+\begin{itemize}
+	\item Cloud Storage: se creó un contenedor para el almacenamiento de los archivos de los modelos.
+	\item Artifact Registry: se cargó la imagen de Docker al registro correspondiente al ambiente de desarrollo.
+	\item Cloud Composer/Airflow: se sincronizó el código del DAG al Composer del ambiente de desarrollo.
+	\item BigQuery: se utilizaron los datasets correspondientes al ambiente de desarrollo para el almacenamiento de las tablas con los resultados.
+	\item Kubernetes Engine: se utilizó el clúster de Kubernetes en modo \textit{autopilot} del ambiente de desarrollo.
+\end{itemize}
+
+En la figura \ref{fig:cap4-dag} se pueden ver las ejecuciones del DAG en Airflow.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-dag.png}
+	\caption{Ejecución de un DAG en Airflow.}
+	\label{fig:cap4-dag}
+\end{figure}
+
+Al estar en un ambiente de desarrollo, la disponibilidad de los recursos fue limitada. Se configuró Airflow para que la ejecución de los operadores del DAG fuera secuencial, es decir, de a uno por vez. En promedio, la ejecución total del DAG tomó 30 minutos. Estos tiempos se podrían mejorar paralelizando la ejecución de los operadores que predicen las categorías L2. Igualmente, esto no supone un problema para la solución, ya que la predicción se hace en forma \textit{batch} y no en tiempo real.
+
+En la tabla \ref{tab:gke} se pueden ver los recursos utilizados para cada paso de predicción del DAG:
+\begin{table}[h]
+	\centering
+	\caption[Especificaciones técnicas Pod]{Especificaciones técnicas del Pod para predicción.}
+	\begin{tabular}{l c}    
+		\toprule
+		\textbf{Componente}			& 			\textbf{Descripción}  \\
+		\midrule	
+		Nro. de núcleos virtuales	& 			8 vCPUs  \\
+		Memoria RAM					&			8 GB \\
+		Nro. de placas de video 	& 			1  \\
+		Versión de placa de video	&			Nvidia T4 \\
+		Memoria de placa de video	& 			16 GB GDDR6  \\
+		\bottomrule
+		\hline
+	\end{tabular}
+	\label{tab:gke}
+\end{table}
+
+En la figura \ref{fig:cap4-pod} se muestra la ejecución de un Pod en el Kubernetes Engine:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-pod.png}
+	\caption{Ejecución de un Pod en el Kubernetes Engine.}
+	\label{fig:cap4-pod}
+\end{figure}
+
+La imagen que se carga en el contenedor del Pod se descarga desde el Artifact Registry, como se ve en la figura \ref{fig:cap4-ar}:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-ar.png}
+	\caption{Imágenes de Docker en el Artifact Registry.}
+	\label{fig:cap4-ar}
+\end{figure}
+
+Por otro lado, en la figura \ref{fig:cap4-bq} se puede ver la estructura de la tabla que contiene los resultados de una predicción:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{./Figures/cap4-bq.png}
+	\caption{Estructura de la tabla de resultados en BigQuery.}
+	\label{fig:cap4-bq}
+\end{figure}
 
