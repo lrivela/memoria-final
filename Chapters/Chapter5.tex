@@ -4,31 +4,27 @@
 
 \label{Chapter5} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
+\section{Conclusiones generales}
 
-%----------------------------------------------------------------------------------------
 
-%----------------------------------------------------------------------------------------
-%	SECTION 1
-%----------------------------------------------------------------------------------------
-
-\section{Conclusiones generales }
-
-La idea de esta sección es resaltar cuáles son los principales aportes del trabajo realizado y cómo se podría continuar. Debe ser especialmente breve y concisa. Es buena idea usar un listado para enumerar los logros obtenidos.
-
-Algunas preguntas que pueden servir para completar este capítulo:
-
+Se destacan las siguientes materias de la carrera para la realización de este trabajo:
 \begin{itemize}
-\item ¿Cuál es el grado de cumplimiento de los requerimientos?
-\item ¿Cuán fielmente se puedo seguir la planificación original (cronograma incluido)?
-\item ¿Se manifestó algunos de los riesgos identificados en la planificación? ¿Fue efectivo el plan de mitigación? ¿Se debió aplicar alguna otra acción no contemplada previamente?
-\item Si se debieron hacer modificaciones a lo planificado ¿Cuáles fueron las causas y los efectos?
-\item ¿Qué técnicas resultaron útiles para el desarrollo del proyecto y cuáles no tanto?
+	\item Procesamiento del lenguaje natural: fue extremadamente importante para aplicar técnicas de preprocesamiento de texto, vectorización y clasificación de texto.
+	\item Bases de datos: para poder realizar la extracción de los datos y para almacenar los resultados.
+	\item Gestión de proyectos: para elaborar un plan y bajarlo a un calendario específico, que posibilitó cumplir con los plazos estipulados.
 \end{itemize}
 
 
-%----------------------------------------------------------------------------------------
-%	SECTION 2
-%----------------------------------------------------------------------------------------
 \section{Próximos pasos}
 
-Acá se indica cómo se podría continuar el trabajo más adelante.
+Luego de haber finalizado este trabajo, se identifican dos tipos de mejoras posibles: 
+\begin{itemize}
+	\item De desempeño.
+	\item De funcionalidad.
+\end{itemize}
+
+Una alternativa para probar mejorar el desempeño de los clasificadores puede ser probar modelos de IA más avanzados y con mayor cantidad de parámetros, como la versión \textit{large} de BERT o incluso probando ROBERTA, que requieren un poder mayor de cómputo que los utilizados. Esto puede resultar particularmente importante para el clasificador L2\_E cuya métrica F1 resultó inferior a 0,7, y también para el clasificador L1 por su impacto en la clasificación final de las subcategorías.
+
+En cuanto a la funcionalidad, durante el transcurso de este trabajo, la empresa ha lanzado nuevos productos que involucran nuevas categorías de reclamos. Cuando se tenga un dataset significativo, se puede re-entrenar el clasificador L1 para incluir las nuevas categorías y los clasificadores L2 para las subcategorías correspondientes.
+
+Por otro lado, se pueden entrenar nuevos clasificadores para las categorías L3, y de esta forma, cubrir el árbol de clasificación completo del proceso de atención de reclamos y consultas de la empresa.
