@@ -31,7 +31,7 @@ Asimismo, se trabajó en otro repositorio que está destinado exclusivamente a l
 
 El repositorio de Airflow cuenta con un Workflow de GitHub Action que sincroniza el código de los DAGs contra un Cloud Storage que está conectado a la instancia del orquestador. Airflow periódicamente controla si hay un flujo de trabajo nuevo y cuando lo detecta, lo carga.
 
-En la parte superior derecha del diagrama se puede ver como al momento de ejecutar el proceso, Airflow utiliza un operador dentro del DAG para conectarse con la plataforma de Kubernetes e instanciar un Pod. Este Pod ejecuta los archivos de código del contenedor que se empaquetaron en la imagen de Docker cargada previamente en el Artifact Registry.
+En la parte superior derecha del diagrama se puede ver cómo al momento de ejecutar el proceso, Airflow utiliza un operador dentro del DAG para conectarse con la plataforma de Kubernetes e instanciar un Pod. Este Pod ejecuta los archivos de código del contenedor que se empaquetaron en la imagen de Docker cargada previamente en el Artifact Registry.
 
 Al finalizar, se guardan los resultados de las predicciones en una tabla en BigQuery y el Pod es eliminado de Kubernetes. Los datos quedan disponibles en la base para que cualquier usuario con los suficientes permisos pueda consumirlos ejecutando una consulta.
 
@@ -280,7 +280,7 @@ Como se menciona en el capítulo \ref{Chapter2}, para entrenar a BETO se utiliz�
 	\item Los \textit{notebooks} administrados por el usuario: permiten una mayor personalización y son ideales cuando se necesita mayor control sobre el entorno.
 \end{itemize}
 
-La instancia utilizada fue la segunda: las administradas por el usuario. El hardware con el que contaba se explica en la tabla \ref{tab:vertex}:
+La instancia utilizada fue la segunda: las administradas por el usuario. El hardware con el que contaba se explica en la tabla \ref{tab:vertex}.
 \begin{table}[h]
 	\centering
 	\caption[Especificaciones técnicas Vertex]{Especificaciones técnicas del entorno de entrenamiento.}
@@ -311,7 +311,7 @@ Para evitar pérdida de información accidental en la etapa de entrenamiento se 
 
 ModelCheckpoint es un \textit{callback} que, dependiendo de cómo se configure, puede ejecutarse al finalizar una época o cada cierta cantidad de lotes o \textit{batches}. Su función principal es guardar los pesos de la red y el estado del optimizador en almacenamiento permanente para no perder esa información en caso de que se apague la instancia o surja algún error. Se pueden configurar criterios de guardado como, por ejemplo, sólo si mejoró una métrica o la función de pérdida.
 
-La configuración usada se explica en la tabla \ref{tab:checkpoint}:
+La configuración usada se explica en la tabla \ref{tab:checkpoint}.
 \begin{table}[H]
 	\centering
 	\caption[Configuración ModelCheckpoint]{Configuración del ModelCheckpoint.}
@@ -345,7 +345,7 @@ Esto se puede notar en la imagen \ref{fig:cap3-overfitting} donde la función de
 
 La clase de TensorFlow utilizada para esto fue EarlyStopping. También es un \textit{callback} pero este lo que hace es ir monitoreando una métrica que se pasa como parámetro y luego de un par de épocas en las que no mejora o empeora, detiene el entrenamiento.
 
-La configuración utilizada se puede ver en la tabla \ref{tab:earlystopping}:
+La configuración utilizada se puede ver en la tabla \ref{tab:earlystopping}.
 \begin{table}[H]
 	\centering
 	\caption[Configuración EarlyStopping]{Configuración de EarlyStopping.}
@@ -483,7 +483,7 @@ La herramienta seleccionada para dirigir la ejecución de código fue Apache Air
 
 En la figura \ref{fig:cap3-pipeline} puede verse cómo es el flujo para cargar un DAG a Airflow, desde su creación en el repositorio de código hasta su ejecución en un Pod de Kubernetes.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=.8\textwidth]{./Figures/cap3-pipeline.png}
 	\caption{Interacción de los componentes del \textit{pipeline}.}
