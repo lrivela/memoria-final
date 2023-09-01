@@ -5,7 +5,7 @@
 %----------------------------------------------------------------------------------------
 %	SECTION 1
 %----------------------------------------------------------------------------------------
-En este capítulo se enumeran los requisitos que la solución debe cumplir y luego se describen principalmente las herramientas utilizadas durante el desarrollo para el entrenamiento y despliegue de los modelos para satisfacerlos.
+En este capítulo se enumeran los requisitos que la solución debe cumplir. Luego se describen las técnicas utilizadas para el pre-procesamiento de los datos. Después se describen los modelos de inteligencia artificial que se utilizaron. Por último, se presentan las herramientas empleadas para el entrenamiento y despliegue de los modelos.
 
 \section{Requerimientos}
 
@@ -69,7 +69,7 @@ Esta etapa es importante porque sirve como base para las etapas posteriores del 
 
 \subsubsection{Remoción de palabras vacías}
 
-Las \textit{stopwords} o palabras vacías son palabras que son muy comunes en el idioma español y están destinadas a aparecer en todas las oraciones, sin importar el tema al que hagan referencia \citep{WEBSITE:16}, por ejemplo: ``en'', ``este'', ``el'', ``las''.
+Las \textit{stopwords} o palabras vacías son palabras muy comunes en el idioma español y están destinadas a aparecer en todas las oraciones, sin importar el tema al que hagan referencia \citep{WEBSITE:16}, por ejemplo: ``en'', ``este'', ``el'', ``las''.
 
 Eliminar palabras comunes permite eliminar palabras con poco valor discriminativo entre textos (o categorías de reclamos). Además reduce el volumen de datos a procesar.
 
@@ -81,7 +81,7 @@ La idea detrás de esta técnica es tratar de agrupar las palabras similares, re
 
 \subsection{Scikit-Learn}
 
-Scikit-Learn es una librería de Python para \textit{Machine Learning} que cuenta con una variedad de algoritmos y modelos para clasificación y regresión. Además cuenta con un conjunto de herramientas de extracción y generación de variables, tanto para datos numéricos como para texto.
+Scikit-Learn es una librería de Python para \textit{Machine Learning} que cuenta con una variedad de algoritmos y modelos para clasificación y regresión. Además, cuenta con un conjunto de herramientas de extracción y generación de variables, tanto para datos numéricos como para texto.
 
 A continuación se dará una explicación de los módulos usados de esta librería.
 
@@ -166,7 +166,7 @@ Cada capa de BERT es un \textit{Transformer Encoder}. Cuando se habla de, por ej
 
 La innovación introducida por BERT es aplicar dos técnicas en la etapa de entrenamiento: MLM \textit{(Masked Language Model)} y NSP \textit{(Next Sentence Prediction)}. 
 
-MLM consiste en dar a BERT una secuencia para que optimice sus pesos internos y produzca la misma secuencia. Sin embargo, previamente a dar a BERT la secuencia, se enmascaran ciertos \textit{tokens} para que BERT los tenga que ``adivinar''. La implicancia de esta técnica es que BERT termina aprendiendo del contexto de la oración para predecirlos.
+MLM consiste en dar a BERT una secuencia para que optimice sus pesos internos y produzca la misma secuencia. Sin embargo, previamente a dar a BERT la secuencia, se enmascaran ciertos \textit{tokens} para que los tenga que ``adivinar''. La implicancia de esta técnica es que BERT termina aprendiendo del contexto de la oración para predecirlos.
 
 Para lograr esto, BERT se apoya en un mecanismo de atención propia o \textit{self-attention} posibilitado por los \textit{Transformers} bidireccionales en el núcleo del diseño de BERT. Esto es importante ya que el significado de una palabra puede cambiar a medida que se desarrolla una oración. Cuantas más palabras haya en cada oración o frase, más ambigua se  vuelve la palabra en cuestión. BERT se encarga de esta ambigüedad leyendo una oración bidireccionalmente, teniendo en cuenta el efecto de todas las palabras en la oración y no sólo las que la preceden \citep{WEBSITE:21}.
 

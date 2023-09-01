@@ -25,7 +25,7 @@ Estos datos son llevados a BigQuery por un proceso ajeno a este desarrollo, que 
 
 En las ocasiones en las que fue necesario un mayor poder de cómputo a través del uso de una placa de vídeo dedicada, se utilizó una instancia de Vertex AI Workbench en la nube de Google. Por lo general, estas situaciones se dieron al momento de realizar distintas pruebas con las redes neuronales BERT. Los modelos eran luego exportados al almacenamiento de la nube llamado Cloud Storage en formato ``Pickle'' o ``HDF5'' \textit{(Hierarchical Data Format 5)}. Esto se puede notar por la flecha que conecta la figura de Cloud Storage con la de Vertex Workbench.
 
-En la parte superior izquierda se encuentras los repositorios creados en GitHub. El repositorio del proyecto cuenta con un Workflow de GitHub Action que se corre manualmente y genera una imagen de Docker, incluyendo bibliotecas y librerías necesarias, archivos de código y de configuración. Esta imagen de Docker es enviada al Artifact Registry de la nube de Google y almacenada allí.
+En la parte superior izquierda se encuentran los repositorios creados en GitHub. El repositorio del proyecto cuenta con un Workflow de GitHub Action que se corre manualmente y genera una imagen de Docker, incluyendo bibliotecas y librerías necesarias, archivos de código y de configuración. Esta imagen de Docker es enviada al Artifact Registry de la nube de Google y almacenada allí.
 
 Asimismo, se trabajó en otro repositorio que está destinado exclusivamente a la administración de los flujos de trabajo de Apache Airflow que tiene el área de \textit{machine learning}. Las actividades realizadas incluyeron agregar un archivo de Python con el código del DAG para administrar la ejecución de la predicción.
 
@@ -108,7 +108,7 @@ En la figura \ref{fig:pipeline-baseline} se explica el proceso para obtener los 
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=.7\textwidth]{./Figures/pipeline-baseline.png}
+	\includegraphics[width=.9\textwidth]{./Figures/pipeline-baseline.png}
 	\caption{Diagrama de codificación para CNB.}
 	\label{fig:pipeline-baseline}
 \end{figure}
@@ -119,7 +119,7 @@ En la figura \ref{fig:pipeline-bert} se puede ver el proceso para el caso de BER
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=.7\textwidth]{./Figures/pipeline-bert.png}
+	\includegraphics[width=.9\textwidth]{./Figures/pipeline-bert.png}
 	\caption{Diagrama de codificación para BERT.}
 	\label{fig:pipeline-bert}
 \end{figure}
@@ -130,7 +130,7 @@ Utiliza la siguiente fórmula para computar los puntajes de los pares de \textit
 \begin{equation}
 puntaje = \frac{\text{frecuencia del par}}{\text{frecuencia del primer elemento}\times \text{frecuencia del segundo elemento}}
 \end{equation}
-Luego une los pares con mayor puntaje y re-calcula para todos los \textit{tokens} resultantes. Este proceso es repetido hasta alcanzar un umbral para el puntaje o hasta alcanzar un límite de \textit{tokens}.
+Luego une los pares con mayor puntaje y recalcula para todos los \textit{tokens} resultantes. Este proceso es repetido hasta alcanzar un umbral para el puntaje o hasta alcanzar un límite de \textit{tokens}.
 
 El vocabulario del modelo pre-entrenado de BERT que se utilizó está compuesto por 977 \textit{tokens} reservados del estilo ``[MASK]'' o ``[PAD]'' por ejemplo y luego por \textit{tokens} de caracteres individuales, subpalabras y palabras. \citep{WEBSITE:22}
 
@@ -147,13 +147,13 @@ En la figura \ref{fig:segmentacion-bert} se puede ver un ejemplo de cómo es seg
 
 Luego de hacer la segmentación de cada frase, se hace un truncamiento de las secuencias largas a un máximo preestablecido y se realiza un relleno a las secuencias cortas con un \textit{token} especial hasta ocupar ese mismo máximo.
 
-Los siguientes pasos son obtener los \textit{input ids} que son los identificadores de los \textit{tokens}, obtener la máscara de atención que marca qué \textit{tokens} la red debe mirar y por último obtener los \textit{token type ids} que marcan a qué secuencia pertenece cada \textit{token} (recordar que BERT se entrena de a pares de secuencia).
+Los siguientes pasos son obtener los \textit{input ids} que son los identificadores de los \textit{tokens}, obtener la máscara de atención que marca qué \textit{tokens} la red debe mirar y por último obtener los \textit{token type ids} que marcan a qué secuencia pertenece cada \textit{token} (recordar que BERT se entrena de a pares de secuencias).
 
 Por otro lado, la codificación de la variable objetivo es igual que en CNB solo que a la variable numérica obtenida se le aplica una codificación \textit{one hot} adicional.
 
 \section{Entrenamiento de los modelos}
 
-En esta sección se describe en detalle los análisis exploratorios realizados sobre los datos, cómo fue concebida la solución de los modelos de IA y las técnicas utilizadas para entrenar los modelos.
+En esta sección se describen en detalle los análisis exploratorios realizados sobre los datos, cómo fue concebida la solución de los modelos de IA y las técnicas utilizadas para entrenar los modelos.
 
 \subsection{Análisis exploratorio}
 
@@ -225,7 +225,7 @@ La segunda contaba originalmente con sólo 2 casos y cuando se incluyeron los de
 
 \subsection{Entrenamiento de BERT}
 
-Como los textos del dataset estaban escritos en español, se utilizó la red BETO. Este modelo es un modelo BERT entrenado con el dataset \textit{spanish unannotated corpora} que cuenta con casi tres millardos de palabras. Está disponible dentro de la librería Transformers de HuggingFace para Python, tanto en Pytorch como en Tensorflow. Para este trabajo se utilizó esta última \citep{WEBSITE:38}.
+Como los textos del dataset estaban escritos en español, se utilizó la red BETO. Este modelo es una variante de BERT que ha sido entrenado con el dataset \textit{spanish unannotated corpora} que cuenta con casi tres millardos de palabras. Está disponible dentro de la librería Transformers de HuggingFace para Python, tanto en Pytorch como en Tensorflow. Para este trabajo se utilizó esta última \citep{WEBSITE:38}.
 
 Por otro lado, estos modelos pre-entrenados deben ser adaptados para realizar tareas como clasificación de texto. En la figura \ref{fig:cap3-downstream} se muestra un esquema de entrenamiento de BETO.
 
@@ -307,7 +307,7 @@ Por otro lado, se decidió utilizar el entorno TensorFlow Enterprise 2.11 como i
 
 \subsubsection{Puntos de control}
 
-Para evitar pérdida de información accidental en la etapa de entrenamiento se utilizó una clase de TensorFlow que se llama ModelCheckpoint.
+Para evitar pérdida de información accidental en la etapa de entrenamiento, se utilizó una clase de TensorFlow llamada ModelCheckpoint.
 
 ModelCheckpoint es un \textit{callback} que, dependiendo de cómo se configure, puede ejecutarse al finalizar una época o cada cierta cantidad de lotes o \textit{batches}. Su función principal es guardar los pesos de la red y el estado del optimizador en almacenamiento permanente para no perder esa información en caso de que se apague la instancia o surja algún error. Se pueden configurar criterios de guardado como, por ejemplo, sólo si mejoró una métrica o la función de pérdida.
 
@@ -332,7 +332,7 @@ La configuración usada se explica en la tabla \ref{tab:checkpoint}.
 
 \subsubsection{Parada temprana}
 
-Otro de los mecanismos de prevención de sobreajuste o \textit{overfitting} utilizados fue la parada temprana o \textit{early stopping}. La idea detrás de esta técnica es detener el entrenamiento cuando el modelo empieza a disminuir su capacidad de generalización.
+Otro de los mecanismos de prevención de sobreajuste u \textit{overfitting} utilizados fue la parada temprana o \textit{early stopping}. La idea detrás de esta técnica es detener el entrenamiento cuando el modelo empieza a disminuir su capacidad de generalización.
 
 Esto se puede notar en la imagen \ref{fig:cap3-overfitting} donde la función de pérdida para el lote de entrenamiento continúa disminuyendo pero para el lote de validación no.
 
@@ -343,7 +343,7 @@ Esto se puede notar en la imagen \ref{fig:cap3-overfitting} donde la función de
 	\label{fig:cap3-overfitting}
 \end{figure}
 
-La clase de TensorFlow utilizada para esto fue EarlyStopping. También es un \textit{callback} pero este lo que hace es ir monitoreando una métrica que se pasa como parámetro y luego de un par de épocas en las que no mejora o empeora, detiene el entrenamiento.
+La clase de TensorFlow utilizada para esto fue EarlyStopping. Se trata de un \textit{callback} que monitorea una métrica que se pasa como parámetro y luego de algunas épocas en las que no mejora o empeora, detiene el entrenamiento.
 
 La configuración utilizada se puede ver en la tabla \ref{tab:earlystopping}.
 \begin{table}[H]
@@ -370,7 +370,7 @@ La configuración utilizada se puede ver en la tabla \ref{tab:earlystopping}.
 
 Al momento de realizar los distintos entrenamientos de BETO, se analizaron qué variaciones se podían realizar en sus etapas desde el preprocesamiento hasta el entrenamiento per se, con el objetivo de intentar maximizar el desempeño del modelo. 
 
-Una de esas variaciones fue dejar o remover las \textit{stopwords}. Esto se puede ver en la imagen \ref{fig:pipeline-texto} donde el paso de ``Remoción de \textit{stopwords}'' aparece en líneas punteadas. Por la forma en que los modelos de BERT aprenden del contexto, en todos los resultados el desempeño mejoró al dejarlas.
+Una de esas variaciones fue dejar o remover las \textit{stopwords}. Esto se puede ver en la figura \ref{fig:pipeline-texto} donde el paso de ``Remoción de \textit{stopwords}'' aparece en líneas punteadas. Por la forma en que los modelos de BERT aprenden del contexto, en todos los resultados el desempeño mejoró al dejarlas.
 
 Otra variación que se intentó probar fue cambiar el largo de la secuencia. Los modelos de BERT admiten hasta un máximo de 512 \textit{tokens}. El desafío aquí es que a mayor largo de secuencia, habrá mayor consumo de memoria, y la placa de video utilizada estaba limitada en 16 GB. Otra consecuencia es que al consumir más memoria, obliga a reducir el \textit{batch size}.
 
@@ -378,13 +378,13 @@ Para la primer parte del entrenamiento, donde las capas inferiores estaban bloqu
 
 Para la segunda parte del entrenamiento, donde se realizó un ajuste fino a todas las capas de la red, se utilizó también un largo de secuencia de 128 pero en este caso hubo que reducir el tamaño del \textit{batch} a 24 muestras.
 
-Cuando recién se estaba comenzando con los entrenamientos, se probó utilizar un largo de secuencia de 512 y con un \textit{batch} de 8, pero estas pruebas fueron desestimadas porque no había mejoras significativas en el desempeño y el entrenamiento demandaba mucho tiempo.
+Cuando recién se estaba comenzando con los entrenamientos, se probó utilizar un largo de secuencia de 512 y un \textit{batch} de 8, pero estas pruebas fueron desestimadas porque no había mejoras significativas en el desempeño y el entrenamiento demandaba mucho tiempo.
 
 \subsubsection{Técnicas para el desbalance de clases}
 
 La distribución de categorías presentaba un desbalance por la naturaleza misma de los reclamos. Hay reclamos con mayor probabilidad de ocurrencia que otros, ya sea porque una funcionalidad se utiliza más, porque tiene mayor propensión a fallar o simplemente porque genera más consultas por parte de los usuarios.
 
-Entre los métodos disponibles para tratar el desbalance había \citep{ARTICLE:7} \citep{WEBSITE:25}:
+Entre los métodos disponibles para tratar el desbalance se encontraban \citep{ARTICLE:7} \citep{WEBSITE:25}:
 \begin{itemize}
 	\item Reagrupar categorías minoritarias en una sola.
 	\item Sobremuestreo aleatorio: consiste en repetir casos de las clases minoritarias de forma aleatoria.
@@ -400,11 +400,11 @@ La opción de sobremuestreo podía generar sobreajuste por lo que fue descartada
 
 Las opciones de \textit{augmentation} no llegaron a probarse por su complejidad y tiempo adicional que llevaría en el desarrollo. Sin embargo, pueden ser una gran alternativa para probar en caso de que se quiera seguir evolucionando el modelo a futuro.
 
-Para este trabajo, se decidió probar \textit{class weights} o pesos para las clases utilizando la clase class\_weight de Scikit-Learn para generar el vector de pesos y luego pasándolo como parámetro a TensorFlow en la etapa de entrenamiento.
+Para este trabajo, se decidió probar \textit{class weights} o pesos para las clases utilizando la clase class\_weight de Scikit-Learn para generar el vector de pesos y luego introducirlo como parámetro a TensorFlow en la etapa de entrenamiento.
 
 \subsubsection{Optimizadores}
 
-Inicialmente, en los entrenamientos realizados se utilizó el optimizador Adam, que es el que viene por defecto en la librería de TensorFlow. De hecho, cuando fue lanzado BERT, sus autores mencionan que \citep{ARTICLE:8}:
+Inicialmente, en los entrenamientos realizados, se utilizó el optimizador Adam, que es el que viene por defecto en la librería de TensorFlow. De hecho, cuando fue lanzado BERT, sus autores mencionaron que \citep{ARTICLE:8}:
 \begin{itemize}
 	\item Utilizaron el optimizador Adam con un \textit{batch size} de 256, un \textit{learning rate} de 1e-4 y 40 épocas para el pre-entrenamiento.
 	\item Utilizaron el optimizador Adam con un \textit{batch size} de 16 o 32, un \textit{learning rate} de 5e-5, 3e-5 o 2e-5 y un número de épocas de entre 2 y 4 para realizar el ajuste fino.
@@ -418,7 +418,7 @@ En la figura \ref{fig:cap3-lamb} se pueden observar los valores de la función d
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=.8\textwidth]{./Figures/cap3-adam-vs-lamb.png}
+	\includegraphics[width=1\textwidth]{./Figures/cap3-adam-vs-lamb.png}
 	\caption{Función de pérdida y exactitud para Adam (azul) y LAMB (rojo) para MNIST\protect\footnotemark.}
 	\label{fig:cap3-lamb}
 \end{figure}
@@ -437,16 +437,16 @@ Para empaquetar el código se utilizó la herramienta Docker en conjunto con un 
 	\item Ejecutar el Workflow y verificar la creación de la imagen en el Artifact Registry.
 \end{enumerate}
 
-A continuación, en la figura \ref{fig:cap3-docker-integracion} se puede ver la integración de los distintos componentes para generar una imagen de Docker.
+A continuación, en la figura \ref{fig:cap3-docker-integracion}, se puede ver la integración de los distintos componentes para generar una imagen de Docker.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=.6\textwidth]{./Figures/cap3-docker-integracion.png}
 	\caption{Interacción de los distintos componentes.}
 	\label{fig:cap3-docker-integracion}
 \end{figure}
 
-En el repositorio de GitHub se encuentran los archivos de código y el Dockerfile. Además dentro del mismo repositorio se encuentra un archivo ``.yaml'' que describe un GitHub Workflow. Este archivo contiene una secuencia de pasos (los GitHub Actions) que deben ejecutarse para generar una imagen de Docker. Estos Actions son ejecutados por un GitHub Runner, que son máquinas virtuales hospedadas por la plataforma. Entre otras cosas, se ejecutan Actions para clonar el código en el Runner, autenticarlo contra la nube de Google, configurar Docker para conectarse al Artifact Registry y comenzar el proceso de construcción.
+En el repositorio de GitHub se encuentran los archivos de código y el Dockerfile. Además, dentro del mismo repositorio se encuentra un archivo ``.yaml'' que describe un GitHub Workflow. Este archivo contiene una secuencia de pasos (los GitHub Actions) que deben ejecutarse para generar una imagen de Docker. Estos Actions son ejecutados por un GitHub Runner, que es una máquina virtual hospedada por la plataforma. Entre otras cosas, se ejecutan Actions para clonar el código en el Runner, autenticarlo contra la nube de Google, configurar Docker para conectarse al Artifact Registry y comenzar el proceso de construcción.
 
 En la figura \ref{fig:cap3-gh-docker} puede verse el menú de GitHub desde donde ejecutar el flujo manualmente para generar la imagen de Docker.
 
@@ -459,7 +459,7 @@ En la figura \ref{fig:cap3-gh-docker} puede verse el menú de GitHub desde donde
 
 El Dockerfile es un archivo que incluye instrucciones para crear una imagen de Docker. En la figura \ref{fig:cap3-docker-dockerfile} puede verse su estructura en detalle.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=.6\textwidth]{./Figures/cap3-docker-dockerfile.png}
 	\caption{Vista detallada de un Dockerfile.}
@@ -485,7 +485,7 @@ En la figura \ref{fig:cap3-pipeline} puede verse cómo es el flujo para cargar u
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=.8\textwidth]{./Figures/cap3-pipeline.png}
+	\includegraphics[width=1\textwidth]{./Figures/cap3-pipeline.png}
 	\caption{Interacción de los componentes del \textit{pipeline}.}
 	\label{fig:cap3-pipeline}
 \end{figure}
@@ -494,7 +494,7 @@ El proceso comienza generando un DAG en el repositorio dedicado para Airflow, qu
 
 El Cloud Composer está continuamente monitoreando si se cargaron nuevos archivos al \textit{bucket} que tiene configurado, y cuando así sucede, los carga en la base de Airflow. Luego procede a mostrarlo en su portal \textit{web}.
 
-Un DAG puede ser programado para ejecutarse a intervalos regulares de tiempo o también puede ser ejecutado manualmente. Cuando se ejecuta, se comienzan a ejecutar distintos operadores en su flujo de trabajo. En la figura \ref{fig:cap3-dag} puede verse la estructura del DAG desarrollado.
+Un DAG puede ser programado para ejecutarse a intervalos regulares de tiempo o también puede ser ejecutado manualmente. Cuando se ejecuta, se comienzan a activar distintos operadores en su flujo de trabajo. En la figura \ref{fig:cap3-dag} puede verse la estructura del DAG desarrollado.
 
 \begin{figure}[H]
 	\centering
@@ -528,10 +528,10 @@ Los estados por los que pasa un Pod pueden verse en la figura \ref{fig:cap3-pod-
 
 A continuación se explica cada uno de ellos \citep{WEBSITE:27}:
 \begin{itemize}
-	\item \textit{Pending}: Cuando el Pod ha sido aceptado por el \textit{cluster} de Kubernetes, pero los contenedores aún no están listos. Por ejemplo, la imagen de Docker aún se está descargando.
-	\item \textit{Running}: Cuando el Pod ha sido asignado a un nodo de Kubernetes y tiene su contenedor corriendo.
-	\item \textit{Succeeded}: Cuando el contenedor del Pod ha terminado exitosamente. Por ejemplo, finalizó la ejecución del código de Python.
-	\item \textit{Failed}: Cuando el contenedor termina con un error. Por ejemplo, un error de programación en el código o un error en la configuración de Kubernetes.
+	\item \textit{Pending}: cuando el Pod ha sido aceptado por el \textit{cluster} de Kubernetes, pero los contenedores aún no están listos. Por ejemplo, la imagen de Docker aún se está descargando.
+	\item \textit{Running}: cuando el Pod ha sido asignado a un nodo de Kubernetes y tiene su contenedor corriendo.
+	\item \textit{Succeeded}: cuando el contenedor del Pod ha terminado exitosamente. Por ejemplo, finalizó la ejecución del código de Python.
+	\item \textit{Failed}: cuando el contenedor termina con un error. Por ejemplo, un error de programación en el código o un error en la configuración de Kubernetes.
 \end{itemize}
 
 \subsection{Parametrización de los contenedores}
@@ -542,7 +542,7 @@ En la figura \ref{fig:cap3-prediccion} se puede ver en detalle este comportamien
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=.8\textwidth]{./Figures/cap3-prediccion.png}
+	\includegraphics[width=1\textwidth]{./Figures/cap3-prediccion.png}
 	\caption{Diagrama de parametrización de un contenedor.}
 	\label{fig:cap3-prediccion}
 \end{figure}

@@ -4,10 +4,20 @@
 
 \label{Chapter5} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
+En este capítulo se presentan los resultados del trabajo y posibles mejoras a futuro.
+
 \section{Conclusiones generales}
 
+Se desarrolló un sistema de clasificación de reclamos de manera exitosa, incluyendo su despliegue en un ambiente de desarrollo, cumpliendo con todos los requerimientos funcionales y no funcionales. Se pudo cumplir con la planificación original y finalizar el total de las tareas, a pesar de que las actividades relacionadas al entrenamiento de los modelos llevaron más horas de las asignadas inicialmente.
 
-Se destacan las siguientes materias de la carrera para la realización de este trabajo:
+A continuación se listan los logros del trabajo final:
+\begin{itemize}
+	\item Identificar la categoría principal de los reclamos con un F1 de 0,8924.
+	\item Identificar la subcategoría de los reclamos con un F1 superior a 0,77 excepto para dos clasificadores.
+	\item Haber desplegado un proceso de predicción en un ambiente de desarrollo, utilizando la infraestructura y herramientas que el área dispuso.
+\end{itemize}
+
+A continuación, se destacan las materias de la carrera de mayor relevancia para la realización de este trabajo:
 \begin{itemize}
 	\item Procesamiento del lenguaje natural: fue extremadamente importante para aplicar técnicas de preprocesamiento de texto, vectorización y clasificación de texto.
 	\item Bases de datos: para poder realizar la extracción de los datos y para almacenar los resultados.
@@ -23,8 +33,8 @@ Luego de haber finalizado este trabajo, se identifican dos tipos de mejoras posi
 	\item De funcionalidad.
 \end{itemize}
 
-Una alternativa para probar mejorar el desempeño de los clasificadores puede ser probar modelos de IA más avanzados y con mayor cantidad de parámetros, como la versión \textit{large} de BERT o incluso probando ROBERTA, que requieren un poder mayor de cómputo que los utilizados. Esto puede resultar particularmente importante para el clasificador L2\_E cuya métrica F1 resultó inferior a 0,7, y también para el clasificador L1 por su impacto en la clasificación final de las subcategorías.
+Una alternativa para mejorar el desempeño de los clasificadores puede ser probar modelos de IA más avanzados y con mayor cantidad de parámetros, como la versión \textit{large} de BERT o incluso probando ROBERTA, que requieren un poder mayor de cómputo que el utilizado. Esto puede resultar particularmente importante para el clasificador L2\_E cuya métrica F1 resultó inferior a 0,7, y también para el clasificador L1 por su impacto en la clasificación final de las subcategorías.
 
-En cuanto a la funcionalidad, durante el transcurso de este trabajo, la empresa ha lanzado nuevos productos que involucran nuevas categorías de reclamos. Cuando se tenga un dataset significativo, se puede re-entrenar el clasificador L1 para incluir las nuevas categorías y los clasificadores L2 para las subcategorías correspondientes.
+En cuanto a la funcionalidad, durante el transcurso de este trabajo, la empresa ha lanzado nuevos productos que involucran nuevas categorías de reclamos. Cuando se tenga un dataset de tamaño significativo, se puede re-entrenar el clasificador L1 para incluir las nuevas categorías y los clasificadores L2 para las subcategorías correspondientes.
 
-Por otro lado, se pueden entrenar nuevos clasificadores para las categorías L3, y de esta forma, cubrir el árbol de clasificación completo del proceso de atención de reclamos y consultas de la empresa.
+Por otro lado, se pueden entrenar nuevos clasificadores para las categorías L3 más importantes, y de esta forma, cubrir el árbol de clasificación completo del proceso de atención de reclamos y consultas de la empresa.

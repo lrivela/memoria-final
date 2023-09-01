@@ -20,7 +20,7 @@
 En este capítulo se realiza una introducción al funcionamiento de un área de atención al cliente. Además, se menciona el estado del arte de los sistemas de procesamiento del lenguaje natural, y por último se explican los objetivos y alcances del presente trabajo.
 
 %----------------------------------------------------------------------------------------
-\section{Introducción}
+\section{Atención al cliente}
 
 En esta sección se introduce un área típica de atención al cliente en una empresa.
 
@@ -47,7 +47,7 @@ A continuación se enumeran los principales roles que se pueden encontrar en el 
 
 \begin{enumerate}
 
-\item Gerente de atención al cliente: tiene bajo su responsabilidad el cumplimiento de metas estratégicas. Gestionan el volumen de casos entrantes y comunican las tendencias a otros departamentos. \citep{WEBSITE:6}
+\item Gerente de atención al cliente: tiene bajo su responsabilidad el cumplimiento de metas estratégicas. Gestiona el volumen de casos entrantes y comunica las tendencias a otros departamentos. \citep{WEBSITE:6}
 \item Coordinador de atención al cliente: es quien está en el día a día en contacto con los agentes. Apoya la resolución de problemas y escala aquellos que requieren validaciones o decisiones que no estén a su alcance \citep{WEBSITE:5}.
 \item Analista de atención al cliente: canaliza las quejas, reclamos y sugerencias. Se encarga de proveer soporte a los usuarios. \citep{WEBSITE:5}
 
@@ -85,7 +85,7 @@ A continuación se describen los pasos principales de un proceso de atención t�
 
 \section{Motivación}
 
-En la actualidad, resulta sumamente sencillo para el cliente optar por la competencia si la empresa no logra satisfacer sus expectativas. Una mala \textit{CX (Customer Experience)} puede generar un efecto de bola de nieve, ya que los usuarios que hayan tenido una mala experiencia, son mas propensos a comunicarlo con sus conocidos haciendo que la empresa no sólo pierda un cliente sino que además, se le dificulte expandir su mercado \citep{WEBSITE:9}.
+En la actualidad, resulta sumamente sencillo para el cliente optar por la competencia si la empresa no logra satisfacer sus expectativas. Una mala \textit{CX (Customer Experience)} puede generar un efecto de bola de nieve, ya que los usuarios que hayan tenido una mala experiencia, son más propensos a comunicarlo con sus conocidos haciendo que la empresa no sólo pierda un cliente sino que además, se le dificulte expandir su mercado \citep{WEBSITE:9}.
 
 Según informes de \textit{CX Trends} \citep{cxtrends}\citep{WEBSITE:4}\citep{WEBSITE:10} y de Esteban Kolsky \citep{WEBSITE:11}:
 
@@ -101,7 +101,7 @@ Estos números muestran que la ausencia de quejas no es un signo de satisfacció
 
 Más aún, entre las principales razones de una mala atención al cliente se encuentran tener tiempos de espera demasiado largos \citep{WEBSITE:12} y tener muchas derivaciones internas \citep{WEBSITE:13}.
 
-De lo anterior se infiere que resulta muy importante que los procesos del área se realicen de forma eficiente. La utilización de modelos de IA para automatizar el proceso de clasificación de reclamos y consultas, ayuda a la empresa a responder a sus clientes con tiempos de respuesta menores y permite disponer de más analistas en la etapa de resolución y cierre. De esta manera, se genera una imagen positiva de la empresa que facilita la fidelización de clientes existentes y aumenta la incorporación de los nuevos.
+De lo anterior se infiere que resulta muy importante que los procesos del área se realicen de forma eficiente. La utilización de modelos de IA para automatizar el proceso de clasificación de reclamos y consultas, ayuda a la empresa a responder a sus clientes con tiempos de respuesta menores y permite disponer de más analistas en la etapa de resolución y cierre. De esta manera, se genera una imagen positiva de la empresa que facilita la fidelización de clientes existentes y aumenta la incorporación de clientes nuevos.
 
 %----------------------------------------------------------------------------------------
 
@@ -129,7 +129,7 @@ Sin embargo, el verdadero hito no fue hasta 2017, cuando se publica la utilizaci
 
 Básicamente, en los \textit{Transformers} se reemplazan las capas recurrentes que se venían utilizando hasta ese momento por ``capas de atención'' que codifican cada palabra en función del resto de la frase, permitiendo de esta forma, introducir el contexto en la representación matemática del texto. Por este motivo, sus \textit{Embeddings} generados son denominados \textit{Embeddings} contextuales.
 
-Otra de las innovaciones introducidas es el uso de \textit{Embeddings} posicionales. Con ellos se logra una mayor paralelización, ya que no es más necesario pasar una palabra a la vez. Agregando un valor secuencial con cada palabra, hacen posible pasarle a la red todas las palabras en simultáneo.
+Otra de las innovaciones introducidas es el uso de \textit{Embeddings} posicionales. Con ellos se logra una mayor paralelización, ya que no resulta necesario pasar una palabra a la vez. Agregando un valor secuencial con cada palabra, hacen posible pasarle a la red todas las palabras en simultáneo.
 
 Estas redes fueron evolucionando en tamaño y complejidad conforme transcurría el tiempo. En la figura \ref{fig:transformers} se puede ver la evolución de la cantidad de parámetros de estas redes a lo largo de los años.
 
