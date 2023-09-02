@@ -84,6 +84,8 @@ A continuación se hacen algunas aclaraciones respecto de los modelos:
 	\item Modelo BETO\_3: los reclamos pertenecientes a la categoría especial fueron eliminados.
 \end{itemize}
 
+\newpage
+
 \subsection{Resultados para clasificador L2 A}
 
 En la figura \ref{fig:res-l2a} se pueden observar los distintos entrenamientos realizados para el clasificador L2 A y su puntaje obtenido.
@@ -107,6 +109,8 @@ En la figura \ref{fig:res-l2b} se muestran los entrenamientos realizados para el
 	\caption{Resultados obtenidos para los modelos clasificadores L2 B.}
 	\label{fig:res-l2b}
 \end{figure}
+
+\newpage
 
 \subsection{Resultados para clasificador L2 C}
 
@@ -133,6 +137,8 @@ A continuación se muestra la figura \ref{fig:res-l2d} con los resultados para l
 \end{figure}
 
 Aclaración: los modelos entrenados con LAMB cuentan con un \textit{head} de clasificación de dos capas.
+
+\newpage
 
 \subsection{Resultados para clasificador L2 E}
 
@@ -162,11 +168,13 @@ En la figura \ref{fig:res-l2f} se muestran los entrenamientos realizados para el
 	\label{fig:res-l2f}
 \end{figure}
 
+\newpage
+
 \subsection{Resultados para clasificador L2 G}
 
 En la figura \ref{fig:res-l2g} se presentan los resultados para los entrenamientos del clasificador L2 G.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2g.png}
 	\caption{Resultados obtenidos para los modelos clasificadores L2 G.}
@@ -188,11 +196,13 @@ A continuación se muestra la figura \ref{fig:res-l2h} con los resultados para l
 
 Aclaración: el modelo BETO\_4 fue entrenado con un \textit{head} de clasificación de dos capas.
 
+\newpage
+
 \subsection{Resultados para clasificador L2 I}
 
 En la figura \ref{fig:res-l2i} se presentan los resultados para los entrenamientos del clasificador L2 I.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1\textwidth]{./Figures/cap4-resultados-l2i.png}
 	\caption{Resultados obtenidos para los modelos clasificadores L2 I.}
@@ -272,7 +282,7 @@ La infraestructura utilizada de Google fue:
 
 En la figura \ref{fig:cap4-dag} se pueden ver las ejecuciones del DAG en Airflow.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1\textwidth]{./Figures/cap4-dag.png}
 	\caption{Ejecución de un DAG en Airflow.}
@@ -282,7 +292,7 @@ En la figura \ref{fig:cap4-dag} se pueden ver las ejecuciones del DAG en Airflow
 Al estar en un ambiente de desarrollo, la disponibilidad de los recursos fue limitada. Se configuró Airflow para que la ejecución de los operadores del DAG fuera secuencial, es decir, de a uno por vez. En promedio, la ejecución total del DAG tomó 30 minutos. Estos tiempos se podrían mejorar paralelizando la ejecución de los operadores que predicen las categorías L2. Igualmente, esto no supone un problema para la solución, ya que la predicción se hace en forma \textit{batch} y no en tiempo real.
 
 En la tabla \ref{tab:gke} se pueden ver los recursos utilizados para cada paso de predicción del DAG.
-\begin{table}[h]
+\begin{table}[H]
 	\centering
 	\caption[Especificaciones técnicas Pod]{Especificaciones técnicas del Pod para predicción.}
 	\begin{tabular}{l c}    
@@ -302,7 +312,7 @@ En la tabla \ref{tab:gke} se pueden ver los recursos utilizados para cada paso d
 
 En la figura \ref{fig:cap4-pod} se muestra la ejecución de un Pod en el Kubernetes Engine:
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1\textwidth]{./Figures/cap4-pod.png}
 	\caption{Ejecución de un Pod en el Kubernetes Engine.}
@@ -320,7 +330,7 @@ La imagen que se carga en el contenedor del Pod se descarga desde el Artifact Re
 
 Por otro lado, en la figura \ref{fig:cap4-bq} se puede ver la estructura de la tabla que contiene los resultados de una predicción:
 
-\begin{figure}[htbp]
+\begin{figure}[htpb]
 	\centering
 	\includegraphics[width=1\textwidth]{./Figures/cap4-bq.png}
 	\caption{Estructura de la tabla de resultados en BigQuery.}
